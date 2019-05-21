@@ -86,12 +86,17 @@ async function launchExpress() {
   app.use(config.Service.BaseUrl + '/probes', probeRouter);
   log.info(__filename, 'launchExpress()', '    ... probeRouter loaded.');
 
+  /** THIS BLOCK REFUSES TO WORK HOW AND I HATE IT */
+  /** THIS BLOCK REFUSES TO WORK HOW AND I HATE IT */
+
   log.warn(__filename, 'startExpress()', `Loading module: ./routes/${config.Service.Name}Routes`);
   let svcRoutes = await import(`./routes/${config.Service.Name}Routes`).then(mod => {
     return mod;
   });
-
   app.use(config.Service.BaseUrl, svcRoutes);
+
+  /** THIS BLOCK REFUSES TO WORK HOW AND I HATE IT */
+  /** THIS BLOCK REFUSES TO WORK HOW AND I HATE IT */
 
   // catch-all for unhandled requests
   app.get('/*', (req, res) => {
