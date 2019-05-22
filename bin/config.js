@@ -9,6 +9,7 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const log = logger_1.default.getInstance();
 class Config {
+    // singleton pattern - constructor is private, use static Config.getInstance()
     constructor() {
         /**
          * Gets and returns the value of the requested environment variable
@@ -48,11 +49,63 @@ class Config {
         this.MONGO_COL_TROPHIES = this.getVar('MONGO_COL_TROPHIES', 'string');
         this.MONGO_CONNSTR = this.getVar('MONGO_CONNSTR', 'string');
         this.MONGO_DB = this.getVar('MONGO_DB', 'string');
-        this.MONGO_CURSOR_LIMIT = this.getVar('MONGO_CURSOR_LIMIT', 'number');
+        this.CURSOR_LIMIT_MAZES = this.getVar('CURSOR_LIMIT_MAZES', 'number');
+        this.CURSOR_LIMIT_SCORES = this.getVar('CURSOR_LIMIT_SCORES', 'number');
+        this.CURSOR_LIMIT_TEAMS = this.getVar('CURSOR_LIMIT_TEAMS', 'number');
+        this.CURSOR_LIMIT_TROPHIES = this.getVar('CURSOR_LIMIT_TROPHIES', 'number');
         this.service = this.loadServiceData(this.SERVICE_DOC_FILE);
+        this.nonProdPortOverride();
     }
+    /**
+     * Instantiate and/or returns class instance
+     */
+    static getInstance() {
+        if (this._instance === undefined) {
+            this._instance = new Config();
+        }
+        return this._instance;
+    }
+    /**
+     * Returns a populated instance of the  Service class.
+     */
     get Service() {
         return this.service;
+    }
+    /**
+     * If environment is not production, override the HTTP port if a
+     * service-specific alternative is found.
+     */
+    nonProdPortOverride() {
+        switch (this.service.Name) {
+            case 'maze': {
+                if (process.env.HTTP_PORT_MAZE) {
+                    this.HTTP_PORT = parseInt(process.env.HTTP_PORT_MAZE + '', 10);
+                    log.debug(__filename, 'nonProdPortOverride()', `Non-prod service port for ${this.service.Name} override: HTTP_PORT is now ${this.HTTP_PORT} `);
+                }
+                break;
+            }
+            case 'team': {
+                if (process.env.HTTP_PORT_TEAM) {
+                    this.HTTP_PORT = parseInt(process.env.HTTP_PORT_TEAM + '', 10);
+                    log.debug(__filename, 'nonProdPortOverride()', `Non-prod service port for ${this.service.Name} override: HTTP_PORT is now ${this.HTTP_PORT} `);
+                }
+                break;
+            }
+            case 'score': {
+                if (process.env.HTTP_PORT_SCORE) {
+                    this.HTTP_PORT = parseInt(process.env.HTTP_PORT_SCORE + '', 10);
+                    log.debug(__filename, 'nonProdPortOverride()', `Non-prod service port for ${this.service.Name} override: HTTP_PORT is now ${this.HTTP_PORT} `);
+                }
+                break;
+            }
+            case 'trophy': {
+                if (process.env.HTTP_PORT_TROPPHY) {
+                    this.HTTP_PORT = parseInt(process.env.HTTP_PORT_TROPPHY + '', 10);
+                    log.debug(__filename, 'nonProdPortOverride()', `Non-prod service port for ${this.service.Name} override: HTTP_PORT is now ${this.HTTP_PORT} `);
+                }
+                break;
+            }
+        }
     }
     /**
      * Loads the given service.json file, creates a Service object from the data,

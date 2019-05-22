@@ -19,7 +19,7 @@ const Trophy_1 = require("@mazemasterjs/shared-library/Trophy");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const Enums_1 = require("@mazemasterjs/shared-library/Enums");
-exports.trophyRouter = express_1.default.Router();
+exports.router = express_1.default.Router();
 // set module references
 const log = logger_1.Logger.getInstance();
 // declare useful constants
@@ -301,32 +301,32 @@ let unhandledRoute = (req, res) => {
     });
 };
 // Route -> http.get mappings
-exports.trophyRouter.get('/service', getServiceDoc);
-exports.trophyRouter.get('/countScores', (req, res) => {
+exports.router.get('/service', getServiceDoc);
+exports.router.get('/countScores', (req, res) => {
     getCount(MONGO_COL_SCORES, req, res);
 });
-exports.trophyRouter.get('/countTrophies', (req, res) => {
+exports.router.get('/countTrophies', (req, res) => {
     getCount(MONGO_COL_TROPHIES, req, res);
 });
-exports.trophyRouter.get('/getScores', (req, res) => {
+exports.router.get('/getScores', (req, res) => {
     getDocs(MONGO_COL_SCORES, req, res);
 });
-exports.trophyRouter.get('/getTrophies', (req, res) => {
+exports.router.get('/getTrophies', (req, res) => {
     getDocs(MONGO_COL_TROPHIES, req, res);
 });
 // special routes
-exports.trophyRouter.get('/generate/default-trophy-list', genTrophies);
+exports.router.get('/generate/default-trophy-list', genTrophies);
 //app.get('/*', (req, res) => {
 // Route -> http.put mappings
-exports.trophyRouter.put('/insertScore', insertScore);
-exports.trophyRouter.put('/updateScore', updateScore);
+exports.router.put('/insertScore', insertScore);
+exports.router.put('/updateScore', updateScore);
 // Route -> http.delete mappings
-exports.trophyRouter.delete('/deleteScore/:scoreId', deleteScore);
+exports.router.delete('/deleteScore/:scoreId', deleteScore);
 // capture all unhandled routes
-exports.trophyRouter.get('/*', unhandledRoute);
-exports.trophyRouter.put('/*', unhandledRoute);
-exports.trophyRouter.delete('/*', unhandledRoute);
-exports.trophyRouter.post('/*', unhandledRoute);
+exports.router.get('/*', unhandledRoute);
+exports.router.put('/*', unhandledRoute);
+exports.router.delete('/*', unhandledRoute);
+exports.router.post('/*', unhandledRoute);
 // expose router as module
-exports.default = exports.trophyRouter;
-//# sourceMappingURL=trophyRoutes.js.map
+exports.default = exports.router;
+//# sourceMappingURL=trophyRouter.js.map

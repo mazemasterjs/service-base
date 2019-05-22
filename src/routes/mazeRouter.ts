@@ -7,7 +7,7 @@ import Service from '@mazemasterjs/shared-library/Service';
 import Maze from '@mazemasterjs/shared-library/Maze';
 import DatabaseManager from '@mazemasterjs/database-manager/DatabaseManager';
 
-export const mazeRouter = express.Router();
+export const router = express.Router();
 
 const log: Logger = Logger.getInstance();
 const config: Config = Config.getInstance();
@@ -509,26 +509,26 @@ function getProtocolHostPort(req: express.Request): string {
 }
 
 // Route -> http.get mappings
-mazeRouter.get('/service', getServiceDoc);
-mazeRouter.get('/get/count', getMazeCount);
-mazeRouter.get('/get/all', getAllMazeStubs);
-mazeRouter.get('/get/:id', getMaze);
-mazeRouter.get('/generate/default-maze-list', generateDefaultMazes);
-mazeRouter.get('/generate/:height/:width/:challenge/:name/:seed', generateMaze);
+router.get('/service', getServiceDoc);
+router.get('/get/count', getMazeCount);
+router.get('/get/all', getAllMazeStubs);
+router.get('/get/:id', getMaze);
+router.get('/generate/default-maze-list', generateDefaultMazes);
+router.get('/generate/:height/:width/:challenge/:name/:seed', generateMaze);
 
 // Route -> http.delete mappings
-mazeRouter.delete('/delete/:id', deleteMazeById);
-mazeRouter.delete('/deleteMany', deleteManyMazes);
+router.delete('/delete/:id', deleteMazeById);
+router.delete('/deleteMany', deleteManyMazes);
 
 // Route -> http.put mappings
-mazeRouter.put('/insert', insertMaze);
-mazeRouter.put('/update', updateMaze);
+router.put('/insert', insertMaze);
+router.put('/update', updateMaze);
 
 // capture all unhandled routes
-mazeRouter.get('/*', unhandledRoute);
-mazeRouter.put('/*', unhandledRoute);
-mazeRouter.delete('/*', unhandledRoute);
-mazeRouter.post('/*', unhandledRoute);
+router.get('/*', unhandledRoute);
+router.put('/*', unhandledRoute);
+router.delete('/*', unhandledRoute);
+router.post('/*', unhandledRoute);
 
 // expose router as module
-export default mazeRouter;
+export default router;

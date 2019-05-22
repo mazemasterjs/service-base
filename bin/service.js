@@ -32,7 +32,7 @@ const cors_1 = __importDefault(require("cors"));
 const Config_1 = __importDefault(require("./Config"));
 const os_1 = require("os");
 // load config
-const config = new Config_1.default();
+const config = Config_1.default.getInstance();
 // get and configure logger
 const log = logger_1.Logger.getInstance();
 log.LogLevel = config.LOG_LEVEL;
@@ -92,18 +92,21 @@ function launchExpress() {
             });
         });
         // set up the probes router (live/ready checks)
-        log.info(__filename, 'launchExpress()', 'Loading probeRouter...');
+        log.force(__filename, 'launchExpress()', 'Loading [./routes/probeRouter]...');
         app.use(config.Service.BaseUrl + '/probes', probeRouter_1.probeRouter);
-        log.info(__filename, 'launchExpress()', '    ... probeRouter loaded.');
-        /** THIS BLOCK REFUSES TO WORK HOW AND I HATE IT */
-        /** THIS BLOCK REFUSES TO WORK HOW AND I HATE IT */
-        log.warn(__filename, 'startExpress()', `Loading module: ./routes/${config.Service.Name}Routes`);
-        let svcRoutes = yield Promise.resolve().then(() => __importStar(require(`./routes/${config.Service.Name}Routes`))).then(mod => {
-            return mod;
+        log.force(__filename, 'launchExpress()', '    ... [./routes/probeRouter] loaded.');
+        // Dynamically load the routes module based on the environment configuration
+        // specified by SERVICE_NAME
+        const modulePath = `./routes/${config.Service.Name}Router`;
+        log.force(__filename, 'launchExpress()', `SERVICE CONFIGURATION --> ${config.Service.Name} <--`);
+        log.force(__filename, 'launchExpress()', `Loading [${modulePath}]...`);
+        yield Promise.resolve().then(() => __importStar(require(modulePath))).then(svc => {
+            app.use(config.Service.BaseUrl, svc.router);
+            log.force(__filename, 'launchExpress()', `    ... [${modulePath}] loaded.`);
+        })
+            .catch(err => {
+            log.error(__filename, 'launchExpress()', `Error loading ./routes/${config.Service.Name}Routes ->`, err);
         });
-        app.use(config.Service.BaseUrl, svcRoutes);
-        /** THIS BLOCK REFUSES TO WORK HOW AND I HATE IT */
-        /** THIS BLOCK REFUSES TO WORK HOW AND I HATE IT */
         // catch-all for unhandled requests
         app.get('/*', (req, res) => {
             log.debug(__filename, req.url, 'Invalid Route Requested -> ' + req.url);

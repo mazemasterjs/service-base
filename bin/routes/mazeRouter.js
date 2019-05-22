@@ -18,7 +18,7 @@ const logger_1 = require("@mazemasterjs/logger");
 const Config_1 = __importDefault(require("@mazemasterjs/shared-library/Config"));
 const Maze_1 = __importDefault(require("@mazemasterjs/shared-library/Maze"));
 const DatabaseManager_1 = __importDefault(require("@mazemasterjs/database-manager/DatabaseManager"));
-exports.mazeRouter = express_1.default.Router();
+exports.router = express_1.default.Router();
 const log = logger_1.Logger.getInstance();
 const config = Config_1.default.getInstance();
 let dbMan;
@@ -474,23 +474,23 @@ function getProtocolHostPort(req) {
     return `${req.protocol}://${req.get('host')}`;
 }
 // Route -> http.get mappings
-exports.mazeRouter.get('/service', getServiceDoc);
-exports.mazeRouter.get('/get/count', getMazeCount);
-exports.mazeRouter.get('/get/all', getAllMazeStubs);
-exports.mazeRouter.get('/get/:id', getMaze);
-exports.mazeRouter.get('/generate/default-maze-list', generateDefaultMazes);
-exports.mazeRouter.get('/generate/:height/:width/:challenge/:name/:seed', generateMaze);
+exports.router.get('/service', getServiceDoc);
+exports.router.get('/get/count', getMazeCount);
+exports.router.get('/get/all', getAllMazeStubs);
+exports.router.get('/get/:id', getMaze);
+exports.router.get('/generate/default-maze-list', generateDefaultMazes);
+exports.router.get('/generate/:height/:width/:challenge/:name/:seed', generateMaze);
 // Route -> http.delete mappings
-exports.mazeRouter.delete('/delete/:id', deleteMazeById);
-exports.mazeRouter.delete('/deleteMany', deleteManyMazes);
+exports.router.delete('/delete/:id', deleteMazeById);
+exports.router.delete('/deleteMany', deleteManyMazes);
 // Route -> http.put mappings
-exports.mazeRouter.put('/insert', insertMaze);
-exports.mazeRouter.put('/update', updateMaze);
+exports.router.put('/insert', insertMaze);
+exports.router.put('/update', updateMaze);
 // capture all unhandled routes
-exports.mazeRouter.get('/*', unhandledRoute);
-exports.mazeRouter.put('/*', unhandledRoute);
-exports.mazeRouter.delete('/*', unhandledRoute);
-exports.mazeRouter.post('/*', unhandledRoute);
+exports.router.get('/*', unhandledRoute);
+exports.router.put('/*', unhandledRoute);
+exports.router.delete('/*', unhandledRoute);
+exports.router.post('/*', unhandledRoute);
 // expose router as module
-exports.default = exports.mazeRouter;
-//# sourceMappingURL=mazeRoutes.js.map
+exports.default = exports.router;
+//# sourceMappingURL=mazeRouter.js.map

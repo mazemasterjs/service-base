@@ -14,7 +14,7 @@ import Config from './Config';
 import { hostname } from 'os';
 
 // load config
-const config = new Config();
+const config = Config.getInstance();
 
 // get and configure logger
 const log = Logger.getInstance();
@@ -82,21 +82,23 @@ async function launchExpress() {
   });
 
   // set up the probes router (live/ready checks)
-  log.info(__filename, 'launchExpress()', 'Loading probeRouter...');
+  log.force(__filename, 'launchExpress()', 'Loading [./routes/probeRouter]...');
   app.use(config.Service.BaseUrl + '/probes', probeRouter);
-  log.info(__filename, 'launchExpress()', '    ... probeRouter loaded.');
+  log.force(__filename, 'launchExpress()', '    ... [./routes/probeRouter] loaded.');
 
-  /** THIS BLOCK REFUSES TO WORK HOW AND I HATE IT */
-  /** THIS BLOCK REFUSES TO WORK HOW AND I HATE IT */
-
-  log.warn(__filename, 'startExpress()', `Loading module: ./routes/${config.Service.Name}Routes`);
-  let svcRoutes = await import(`./routes/${config.Service.Name}Routes`).then(mod => {
-    return mod;
-  });
-  app.use(config.Service.BaseUrl, svcRoutes);
-
-  /** THIS BLOCK REFUSES TO WORK HOW AND I HATE IT */
-  /** THIS BLOCK REFUSES TO WORK HOW AND I HATE IT */
+  // Dynamically load the routes module based on the environment configuration
+  // specified by SERVICE_NAME
+  const modulePath = `./routes/${config.Service.Name}Router`;
+  log.force(__filename, 'launchExpress()', `SERVICE CONFIGURATION --> ${config.Service.Name} <--`);
+  log.force(__filename, 'launchExpress()', `Loading [${modulePath}]...`);
+  await import(modulePath)
+    .then(svc => {
+      app.use(config.Service.BaseUrl, svc.router);
+      log.force(__filename, 'launchExpress()', `    ... [${modulePath}] loaded.`);
+    })
+    .catch(err => {
+      log.error(__filename, 'launchExpress()', `Error loading ./routes/${config.Service.Name}Routes ->`, err);
+    });
 
   // catch-all for unhandled requests
   app.get('/*', (req, res) => {

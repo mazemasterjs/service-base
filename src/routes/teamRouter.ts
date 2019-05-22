@@ -5,7 +5,7 @@ import Service from '@mazemasterjs/shared-library/Service';
 import DatabaseManager from '@mazemasterjs/database-manager/DatabaseManager';
 import { Team } from '@mazemasterjs/shared-library/Team';
 
-export const teamRouter = express.Router();
+export const router = express.Router();
 
 // set module references
 const log: Logger = Logger.getInstance();
@@ -254,22 +254,22 @@ function getProtocolHostPort(req: express.Request): string {
 }
 
 // Route -> http.get mappings
-teamRouter.get('/get/count', getTeamCount);
-teamRouter.get('/get', getTeams);
-teamRouter.get('/service', getServiceDoc);
+router.get('/get/count', getTeamCount);
+router.get('/get', getTeams);
+router.get('/service', getServiceDoc);
 
 // Route -> http.put mappings
-teamRouter.put('/insert', insertTeam);
-teamRouter.put('/update', updateTeam);
+router.put('/insert', insertTeam);
+router.put('/update', updateTeam);
 
 // Route -> http.delete mappings
-teamRouter.delete('/delete/:teamId', deleteTeam);
+router.delete('/delete/:teamId', deleteTeam);
 
 // capture all unhandled routes
-teamRouter.get('/*', unhandledRoute);
-teamRouter.put('/*', unhandledRoute);
-teamRouter.delete('/*', unhandledRoute);
-teamRouter.post('/*', unhandledRoute);
+router.get('/*', unhandledRoute);
+router.put('/*', unhandledRoute);
+router.delete('/*', unhandledRoute);
+router.post('/*', unhandledRoute);
 
 // expose router as module
-export default teamRouter;
+export default router;

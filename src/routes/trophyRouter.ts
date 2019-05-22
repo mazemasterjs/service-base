@@ -7,7 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { DATABASES } from '@mazemasterjs/shared-library/Enums';
 
-export const scoreRouter = express.Router();
+export const router = express.Router();
 
 // set module references
 const log: Logger = Logger.getInstance();
@@ -310,40 +310,39 @@ let unhandledRoute = (req: express.Request, res: express.Response) => {
 };
 
 // Route -> http.get mappings
-scoreRouter.get('/service', getServiceDoc);
+router.get('/service', getServiceDoc);
 
-scoreRouter.get('/countScores', (req, res) => {
+router.get('/countScores', (req, res) => {
   getCount(MONGO_COL_SCORES, req, res);
 });
-scoreRouter.get('/countTrophies', (req, res) => {
+router.get('/countTrophies', (req, res) => {
   getCount(MONGO_COL_TROPHIES, req, res);
 });
 
-scoreRouter.get('/getScores', (req, res) => {
+router.get('/getScores', (req, res) => {
   getDocs(MONGO_COL_SCORES, req, res);
 });
-scoreRouter.get('/getTrophies', (req, res) => {
+router.get('/getTrophies', (req, res) => {
   getDocs(MONGO_COL_TROPHIES, req, res);
 });
 
 // special routes
-scoreRouter.get('/generate/default-trophy-list', genTrophies);
+router.get('/generate/default-trophy-list', genTrophies);
 
 //app.get('/*', (req, res) => {
 
 // Route -> http.put mappings
-scoreRouter.put('/insertScore', insertScore);
-scoreRouter.put('/updateScore', updateScore);
+router.put('/insertScore', insertScore);
+router.put('/updateScore', updateScore);
 
 // Route -> http.delete mappings
-scoreRouter.delete('/deleteScore/:scoreId', deleteScore);
+router.delete('/deleteScore/:scoreId', deleteScore);
 
 // capture all unhandled routes
-scoreRouter.get('/*', unhandledRoute);
-scoreRouter.put('/*', unhandledRoute);
-scoreRouter.delete('/*', unhandledRoute);
-scoreRouter.post('/*', unhandledRoute);
+router.get('/*', unhandledRoute);
+router.put('/*', unhandledRoute);
+router.delete('/*', unhandledRoute);
+router.post('/*', unhandledRoute);
 
-console.log('LOADED!');
 // expose router as module
-export default scoreRouter;
+export default router;
