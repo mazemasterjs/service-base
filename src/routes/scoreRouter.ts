@@ -1,18 +1,14 @@
-import express from 'express';
-import { Logger } from '@mazemasterjs/logger';
-import DatabaseManager from '@mazemasterjs/database-manager/DatabaseManager';
-import { Score } from '@mazemasterjs/shared-library/Score';
 import * as sf from './sharedFuncs';
 import Config from '../Config';
+import DatabaseManager from '@mazemasterjs/database-manager/DatabaseManager';
+import express from 'express';
+import { Logger } from '@mazemasterjs/logger';
 
 export const router = express.Router();
 
 // set module instance references
 const log: Logger = Logger.getInstance();
 const config: Config = Config.getInstance();
-
-// declare useful constants
-const ROUTE_PATH: string = '/api/score';
 
 // declare dbMan - initialized during startup
 let dbMan: DatabaseManager;
@@ -38,7 +34,7 @@ let unhandledRoute = (req: express.Request, res: express.Response) => {
   log.warn(__filename, `Route -> [${req.method} -> ${req.url}]`, 'Unhandled route, returning 404.');
   res.status(404).json({
     status: '404',
-    message: `Route not found.  See ${ROUTE_PATH}/service for detailed documentation.`,
+    message: `Route not found.  See ${config.Service.BaseUrl}/service for detailed documentation.`,
   });
 };
 
@@ -68,7 +64,7 @@ router.get('/get', (req, res) => {
     });
 });
 
-// Route -> http.put mappings
+// insert the document body into scores collection
 router.put('/insert', (req, res) => {
   log.debug(__filename, req.url, 'Handling request -> ' + req.path);
   sf.insertDoc(config.MONGO_COL_SCORES, req)
@@ -80,6 +76,7 @@ router.put('/insert', (req, res) => {
     });
 });
 
+// update existing document body in scores collection
 router.put('/update', (req, res) => {
   log.debug(__filename, req.url, 'Handling request -> ' + req.path);
   sf.updateDoc(config.MONGO_COL_SCORES, req)
@@ -91,7 +88,7 @@ router.put('/update', (req, res) => {
     });
 });
 
-// Route -> http.delete mappings
+// delete a document from the scores collection that matches the given id
 router.delete('/delete/:scoreId', (req, res) => {
   log.debug(__filename, req.url, 'Handling request -> ' + req.path);
   let docId = req.params.scoreId;

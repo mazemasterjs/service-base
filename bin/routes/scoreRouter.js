@@ -1,7 +1,4 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -9,18 +6,19 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const logger_1 = require("@mazemasterjs/logger");
-const DatabaseManager_1 = __importDefault(require("@mazemasterjs/database-manager/DatabaseManager"));
 const sf = __importStar(require("./sharedFuncs"));
 const Config_1 = __importDefault(require("../Config"));
+const DatabaseManager_1 = __importDefault(require("@mazemasterjs/database-manager/DatabaseManager"));
+const express_1 = __importDefault(require("express"));
+const logger_1 = require("@mazemasterjs/logger");
 exports.router = express_1.default.Router();
 // set module instance references
 const log = logger_1.Logger.getInstance();
 const config = Config_1.default.getInstance();
-// declare useful constants
-const ROUTE_PATH = '/api/score';
 // declare dbMan - initialized during startup
 let dbMan;
 /**
@@ -43,7 +41,7 @@ let unhandledRoute = (req, res) => {
     log.warn(__filename, `Route -> [${req.method} -> ${req.url}]`, 'Unhandled route, returning 404.');
     res.status(404).json({
         status: '404',
-        message: `Route not found.  See ${ROUTE_PATH}/service for detailed documentation.`,
+        message: `Route not found.  See ${config.Service.BaseUrl}/service for detailed documentation.`,
     });
 };
 // respond with the config.Service document
@@ -69,7 +67,7 @@ exports.router.get('/get', (req, res) => {
         res.status(500).json(err);
     });
 });
-// Route -> http.put mappings
+// insert the document body into scores collection
 exports.router.put('/insert', (req, res) => {
     log.debug(__filename, req.url, 'Handling request -> ' + req.path);
     sf.insertDoc(config.MONGO_COL_SCORES, req)
@@ -80,6 +78,7 @@ exports.router.put('/insert', (req, res) => {
         res.status(200).json(err);
     });
 });
+// update existing document body in scores collection
 exports.router.put('/update', (req, res) => {
     log.debug(__filename, req.url, 'Handling request -> ' + req.path);
     sf.updateDoc(config.MONGO_COL_SCORES, req)
@@ -90,7 +89,7 @@ exports.router.put('/update', (req, res) => {
         res.status(200).json(err);
     });
 });
-// Route -> http.delete mappings
+// delete a document from the scores collection that matches the given id
 exports.router.delete('/delete/:scoreId', (req, res) => {
     log.debug(__filename, req.url, 'Handling request -> ' + req.path);
     let docId = req.params.scoreId;
