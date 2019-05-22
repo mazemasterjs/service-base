@@ -49,28 +49,28 @@ exports.router.get('/service', (req, res) => {
     log.debug(__filename, req.url, 'Handling request -> ' + req.path);
     res.status(200).json(config.Service);
 });
-// respond with the document count
-exports.router.get('/count', (req, res) => {
+// respond with the document count of the scores collection
+exports.router.get('/get/count', (req, res) => {
     log.debug(__filename, req.url, 'Handling request -> ' + req.path);
-    sf.getCount(config.MONGO_COL_TROPHIES, req).then(count => {
-        res.status(200).json({ collection: `${config.MONGO_COL_TROPHIES}`, count });
+    sf.getCount(config.MONGO_COL_SCORES, req).then(count => {
+        res.status(200).json({ collection: `${config.MONGO_COL_SCORES}`, count });
     });
 });
 // respond with the requested documents
 exports.router.get('/get', (req, res) => {
     log.debug(__filename, req.url, 'Handling request -> ' + req.path);
-    sf.getDocs(config.MONGO_COL_TROPHIES, req)
-        .then(trophies => {
-        res.status(200).json(trophies);
+    sf.getDocs(config.MONGO_COL_SCORES, req)
+        .then(scores => {
+        res.status(200).json(scores);
     })
         .catch(err => {
         res.status(500).json(err);
     });
 });
-// insert the document body into target collection
+// insert the document body into scores collection
 exports.router.put('/insert', (req, res) => {
     log.debug(__filename, req.url, 'Handling request -> ' + req.path);
-    sf.insertDoc(config.MONGO_COL_TROPHIES, req)
+    sf.insertDoc(config.MONGO_COL_SCORES, req)
         .then(result => {
         res.status(200).json(result);
     })
@@ -78,10 +78,10 @@ exports.router.put('/insert', (req, res) => {
         res.status(500).json(err);
     });
 });
-// update existing document body in trophies collection
+// update existing document body in scores collection
 exports.router.put('/update', (req, res) => {
     log.debug(__filename, req.url, 'Handling request -> ' + req.path);
-    sf.updateDoc(config.MONGO_COL_TROPHIES, req)
+    sf.updateDoc(config.MONGO_COL_SCORES, req)
         .then(result => {
         res.status(200).json(result);
     })
@@ -89,7 +89,7 @@ exports.router.put('/update', (req, res) => {
         res.status(500).json(err);
     });
 });
-// delete a document from the  collection that matches the given id
+// delete a document from the scores collection that matches the given id
 exports.router.delete('/delete/:scoreId', (req, res) => {
     log.debug(__filename, req.url, 'Handling request -> ' + req.path);
     let docId = req.params.scoreId;
@@ -108,4 +108,4 @@ exports.router.delete('/*', unhandledRoute);
 exports.router.post('/*', unhandledRoute);
 // expose router as module
 exports.default = exports.router;
-//# sourceMappingURL=trophyRouter.js.map
+//# sourceMappingURL=scoreRouter.1.js.map

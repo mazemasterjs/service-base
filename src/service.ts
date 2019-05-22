@@ -1,4 +1,4 @@
-import express, { Router, Application } from 'express';
+import express, { Application, Router } from 'express';
 import compression from 'compression';
 import bodyParser from 'body-parser';
 import { Logger } from '@mazemasterjs/logger';
@@ -28,9 +28,6 @@ let httpServer: Server;
 
 // prep reference for
 let dbMan: DatabaseManager;
-
-// load service's routes module
-let svcRoutes = undefined;
 
 /**
  * APPLICATION ENTRY POINT

@@ -1,15 +1,15 @@
+import { Maze } from '@mazemasterjs/shared-library/Maze';
 import fs, { promises } from 'fs';
-import path from 'path';
 import { Request } from 'express';
 import Logger from '@mazemasterjs/logger';
 import { Score } from '@mazemasterjs/shared-library/Score';
 import { Trophy } from '@mazemasterjs/shared-library/Trophy';
-import { Maze } from '@mazemasterjs/shared-library/Maze';
+import path from 'path';
 import { Team } from '@mazemasterjs/shared-library/Team';
 import Config from '../Config';
 import DatabaseManager from '@mazemasterjs/database-manager/DatabaseManager';
 import { resolve } from 'dns';
-import { InsertOneWriteOpResult, UpdateWriteOpResult, DeleteWriteOpResultObject } from 'mongodb';
+import { DeleteWriteOpResultObject, InsertOneWriteOpResult, UpdateWriteOpResult } from 'mongodb';
 
 const log = Logger.getInstance();
 const config = Config.getInstance();
@@ -38,7 +38,7 @@ DatabaseManager.getInstance()
  * @param res - express.Response
  */
 export async function deleteDoc(colName: string, docId: any, req: Request): Promise<DeleteWriteOpResultObject> {
-  let method = `deleteDoc(${colName}, ${docId}, req)`;
+  const method = `deleteDoc(${colName}, ${docId}, req)`;
   log.debug(__filename, method, 'Attempting to delete document.');
 
   return await dbMan
@@ -65,7 +65,7 @@ export async function insertDoc(colName: string, req: Request): Promise<InsertOn
 
   // first attempt to convert the document to an object using new <T>(data)
   try {
-    doc = jsonToClass(colName, req.body);
+    doc = coerceJson(colName, req.body);
   } catch (err) {
     return Promise.reject({ error: 'Invalid Data', message: err.message });
   }
@@ -91,11 +91,11 @@ export async function insertDoc(colName: string, req: Request): Promise<InsertOn
 export async function updateDoc(colName: string, req: Request): Promise<UpdateWriteOpResult> {
   log.debug(__filename, `insertDoc(${colName}, req)`, 'Inserting document.');
   let doc: any = req.body;
-  let docId: any = doc.id;
+  const docId: any = doc.id;
 
   // first attempt to convert the document to an object using new <T>(data)
   try {
-    doc = jsonToClass(colName, req.body);
+    doc = coerceJson(colName, req.body);
   } catch (err) {
     return Promise.reject({ error: 'Invalid Data', message: err.message });
   }
@@ -120,11 +120,19 @@ export async function updateDoc(colName: string, req: Request): Promise<UpdateWr
  */
 export async function getCount(colName: string, req: Request): Promise<number> {
   log.debug(__filename, req.url, 'Handling request -> ' + req.path);
+  const query: any = {};
+
+  // build the json object containing score parameters to search for
+  for (const key in req.query) {
+    if (req.query.hasOwnProperty(key)) {
+      query[key] = req.query[key];
+    }
+  }
 
   return await dbMan
-    .getDocumentCount(colName)
+    .getDocumentCount(colName, query)
     .then(count => {
-      log.debug(__filename, `getCount(${colName}, req)`, 'Count=' + count);
+      log.debug(__filename, `getCount(${colName}, ${query}, req)`, 'Count=' + count);
       return Promise.resolve(count);
     })
     .catch(err => {
@@ -148,28 +156,29 @@ export async function getDocs(colName: string, req: Request): Promise<Array<any>
   const pageSize = 10;
   let pageNum = 1;
   const query: any = {};
-  let docs = new Array<any>();
+  const docs = new Array<any>();
   let done = false;
 
   // build the json object containing score parameters to search for
   for (const key in req.query) {
-    query[key] = req.query[key];
+    if (req.query.hasOwnProperty(key)) {
+      query[key] = req.query[key];
+    }
   }
-
-  log.debug(__filename, method, `Querying ${colName} with parameter(s): ${JSON.stringify(query)}`);
 
   try {
     // loop through the paged list of docs and build a return array.
     while (!done) {
-      let page = await dbMan.getDocuments(colName, query, {}, pageSize, pageNum);
+      log.debug(__filename, method, `QUERY :: Page ${pageNum}, ${colName}, ${JSON.stringify(query)}`);
+      const page = await dbMan.getDocuments(colName, query, {}, pageSize, pageNum);
 
       if (page.length > 0) {
-        log.debug(__filename, method, `Page #${pageNum}: Processing ${page.length} documents.`);
+        log.debug(__filename, method, `Page #${pageNum}: Processing ${page.length} document(s).`);
 
         // can't easily use Array.concat, so have to loop and push
         for (const doc of page) {
           try {
-            let tmpDoc = jsonToClass(colName, doc);
+            const tmpDoc = coerceJson(colName, doc);
             docs.push(tmpDoc);
           } catch (err) {
             log.warn(__filename, method, `Invalid ${colName} document encountered (_id=${doc._id}). It has been excluded from the result set.`);
@@ -196,15 +205,14 @@ export async function getDocs(colName: string, req: Request): Promise<Array<any>
   }
 }
 
-// instantiate as Score to validate document body
 /**
- * Attempt to load the given json
+ * Attempt to load the given json via a stuctured class
  *
  * @param colName
  * @param jsonDoc
  * @param typeName
  */
-function jsonToClass(colName: string, jsonDoc: any): any {
+function coerceJson(colName: string, jsonDoc: any): any {
   let className = '';
   const method = `jsonToClass(${colName}, jsonDoc)`;
 
@@ -212,21 +220,21 @@ function jsonToClass(colName: string, jsonDoc: any): any {
     switch (colName) {
       case config.MONGO_COL_SCORES: {
         className = Score.name;
-        log.debug(__filename, method, `Attempting to load json into Score object.`);
+        log.debug(__filename, method, `Attempting type coercion: JSON -> ${className}`);
         return new Score(jsonDoc);
       }
       case config.MONGO_COL_TROPHIES: {
-        log.debug(__filename, method, `Attempting to load json into Trohpy object`);
+        log.debug(__filename, method, `Attempting type coercion: JSON -> ${className}`);
         className = Trophy.name;
         return new Trophy(jsonDoc);
       }
       default: {
-        log.debug(__filename, method, `Unmapped collection ${colName}, returning unaltered json.`);
+        log.debug(__filename, method, `No coercion mapped for ${colName}, returning unaltered JSON.`);
         return jsonDoc;
       }
     }
   } catch (error) {
-    let err: Error = new Error(`Unable to load jsonDoc into object of class ${className} -> ${error.message}`);
+    const err: Error = new Error(`Unable to coerce JSON into ${className} -> ${error.message}`);
     log.error(__filename, `jsonToClass(${colName}, req)`, `Data Error ->`, err);
     throw err;
   }

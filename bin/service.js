@@ -42,8 +42,6 @@ const app = express_1.default();
 let httpServer;
 // prep reference for
 let dbMan;
-// load service's routes module
-let svcRoutes = undefined;
 /**
  * APPLICATION ENTRY POINT
  */

@@ -41,7 +41,7 @@ DatabaseManager_1.default.getInstance()
  */
 function deleteDoc(colName, docId, req) {
     return __awaiter(this, void 0, void 0, function* () {
-        let method = `deleteDoc(${colName}, ${docId}, req)`;
+        const method = `deleteDoc(${colName}, ${docId}, req)`;
         log.debug(__filename, method, 'Attempting to delete document.');
         return yield dbMan
             .deleteDocument(colName, { id: docId })
@@ -68,7 +68,7 @@ function insertDoc(colName, req) {
         let doc;
         // first attempt to convert the document to an object using new <T>(data)
         try {
-            doc = jsonToClass(colName, req.body);
+            doc = coerceJson(colName, req.body);
         }
         catch (err) {
             return Promise.reject({ error: 'Invalid Data', message: err.message });
@@ -96,10 +96,10 @@ function updateDoc(colName, req) {
     return __awaiter(this, void 0, void 0, function* () {
         log.debug(__filename, `insertDoc(${colName}, req)`, 'Inserting document.');
         let doc = req.body;
-        let docId = doc.id;
+        const docId = doc.id;
         // first attempt to convert the document to an object using new <T>(data)
         try {
-            doc = jsonToClass(colName, req.body);
+            doc = coerceJson(colName, req.body);
         }
         catch (err) {
             return Promise.reject({ error: 'Invalid Data', message: err.message });
@@ -126,10 +126,17 @@ exports.updateDoc = updateDoc;
 function getCount(colName, req) {
     return __awaiter(this, void 0, void 0, function* () {
         log.debug(__filename, req.url, 'Handling request -> ' + req.path);
+        const query = {};
+        // build the json object containing score parameters to search for
+        for (const key in req.query) {
+            if (req.query.hasOwnProperty(key)) {
+                query[key] = req.query[key];
+            }
+        }
         return yield dbMan
-            .getDocumentCount(colName)
+            .getDocumentCount(colName, query)
             .then(count => {
-            log.debug(__filename, `getCount(${colName}, req)`, 'Count=' + count);
+            log.debug(__filename, `getCount(${colName}, ${query}, req)`, 'Count=' + count);
             return Promise.resolve(count);
         })
             .catch(err => {
@@ -154,23 +161,25 @@ function getDocs(colName, req) {
         const pageSize = 10;
         let pageNum = 1;
         const query = {};
-        let docs = new Array();
+        const docs = new Array();
         let done = false;
         // build the json object containing score parameters to search for
         for (const key in req.query) {
-            query[key] = req.query[key];
+            if (req.query.hasOwnProperty(key)) {
+                query[key] = req.query[key];
+            }
         }
-        log.debug(__filename, method, `Querying ${colName} with parameter(s): ${JSON.stringify(query)}`);
         try {
             // loop through the paged list of docs and build a return array.
             while (!done) {
-                let page = yield dbMan.getDocuments(colName, query, {}, pageSize, pageNum);
+                log.debug(__filename, method, `QUERY :: Page ${pageNum}, ${colName}, ${JSON.stringify(query)}`);
+                const page = yield dbMan.getDocuments(colName, query, {}, pageSize, pageNum);
                 if (page.length > 0) {
-                    log.debug(__filename, method, `Page #${pageNum}: Processing ${page.length} documents.`);
+                    log.debug(__filename, method, `Page #${pageNum}: Processing ${page.length} document(s).`);
                     // can't easily use Array.concat, so have to loop and push
                     for (const doc of page) {
                         try {
-                            let tmpDoc = jsonToClass(colName, doc);
+                            const tmpDoc = coerceJson(colName, doc);
                             docs.push(tmpDoc);
                         }
                         catch (err) {
@@ -199,37 +208,36 @@ function getDocs(colName, req) {
     });
 }
 exports.getDocs = getDocs;
-// instantiate as Score to validate document body
 /**
- * Attempt to load the given json
+ * Attempt to load the given json via a stuctured class
  *
  * @param colName
  * @param jsonDoc
  * @param typeName
  */
-function jsonToClass(colName, jsonDoc) {
+function coerceJson(colName, jsonDoc) {
     let className = '';
     const method = `jsonToClass(${colName}, jsonDoc)`;
     try {
         switch (colName) {
             case config.MONGO_COL_SCORES: {
                 className = Score_1.Score.name;
-                log.debug(__filename, method, `Attempting to load json into Score object.`);
+                log.debug(__filename, method, `Attempting type coercion: JSON -> ${className}`);
                 return new Score_1.Score(jsonDoc);
             }
             case config.MONGO_COL_TROPHIES: {
-                log.debug(__filename, method, `Attempting to load json into Trohpy object`);
+                log.debug(__filename, method, `Attempting type coercion: JSON -> ${className}`);
                 className = Trophy_1.Trophy.name;
                 return new Trophy_1.Trophy(jsonDoc);
             }
             default: {
-                log.debug(__filename, method, `Unmapped collection ${colName}, returning unaltered json.`);
+                log.debug(__filename, method, `No coercion mapped for ${colName}, returning unaltered JSON.`);
                 return jsonDoc;
             }
         }
     }
     catch (error) {
-        let err = new Error(`Unable to load jsonDoc into object of class ${className} -> ${error.message}`);
+        const err = new Error(`Unable to coerce JSON into ${className} -> ${error.message}`);
         log.error(__filename, `jsonToClass(${colName}, req)`, `Data Error ->`, err);
         throw err;
     }

@@ -12,7 +12,8 @@
     ],
     "no-bitwise": false,
     "array-type": false,
-    "no-unused-variable": true
+    "no-unused-variable": true,
+    "object-literal-sort-keys": false
   },
   "rulesDirectory": []
 }

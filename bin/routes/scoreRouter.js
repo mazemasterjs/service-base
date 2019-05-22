@@ -10,7 +10,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const sf = __importStar(require("./sharedFuncs"));
+const sRt = __importStar(require("./sharedRoutes"));
 const Config_1 = __importDefault(require("../Config"));
 const DatabaseManager_1 = __importDefault(require("@mazemasterjs/database-manager/DatabaseManager"));
 const express_1 = __importDefault(require("express"));
@@ -34,78 +34,40 @@ DatabaseManager_1.default.getInstance()
     .catch(err => {
     log.error(__filename, 'DatabaseManager.getInstance()', 'Error getting DatabaseManager instance ->', err);
 });
-/**
- * Handles undefined routes
- */
-let unhandledRoute = (req, res) => {
-    log.warn(__filename, `Route -> [${req.method} -> ${req.url}]`, 'Unhandled route, returning 404.');
-    res.status(404).json({
-        status: '404',
-        message: `Route not found.  See ${config.Service.BaseUrl}/service for detailed documentation.`,
-    });
-};
 // respond with the config.Service document
 exports.router.get('/service', (req, res) => {
-    log.debug(__filename, req.url, 'Handling request -> ' + req.path);
+    log.debug(__filename, req.path, 'Handling request -> ' + req.url);
     res.status(200).json(config.Service);
 });
-// respond with the document count of the scores collection
-exports.router.get('/get/count', (req, res) => {
-    log.debug(__filename, req.url, 'Handling request -> ' + req.path);
-    sf.getCount(config.MONGO_COL_SCORES, req).then(count => {
-        res.status(200).json({ collection: `${config.MONGO_COL_SCORES}`, count });
-    });
+exports.router.get('/count', (req, res) => {
+    log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    sRt.countDocs(config.MONGO_COL_SCORES, req, res);
 });
 // respond with the requested documents
 exports.router.get('/get', (req, res) => {
-    log.debug(__filename, req.url, 'Handling request -> ' + req.path);
-    sf.getDocs(config.MONGO_COL_SCORES, req)
-        .then(scores => {
-        res.status(200).json(scores);
-    })
-        .catch(err => {
-        res.status(500).json(err);
-    });
+    log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    sRt.getDocs(config.MONGO_COL_SCORES, req, res);
 });
-// insert the document body into scores collection
+// forward standard insert request to sharedRoutes module
 exports.router.put('/insert', (req, res) => {
-    log.debug(__filename, req.url, 'Handling request -> ' + req.path);
-    sf.insertDoc(config.MONGO_COL_SCORES, req)
-        .then(result => {
-        res.status(200).json(result);
-    })
-        .catch(err => {
-        res.status(500).json(err);
-    });
+    log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    sRt.insertDoc(config.MONGO_COL_SCORES, req, res);
 });
-// update existing document body in scores collection
+// forward standard update request to sharedRoutes module
 exports.router.put('/update', (req, res) => {
-    log.debug(__filename, req.url, 'Handling request -> ' + req.path);
-    sf.updateDoc(config.MONGO_COL_SCORES, req)
-        .then(result => {
-        res.status(200).json(result);
-    })
-        .catch(err => {
-        res.status(500).json(err);
-    });
+    log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    sRt.updateDoc(config.MONGO_COL_SCORES, req, res);
 });
-// delete a document from the scores collection that matches the given id
+// forward standard delete request to sharedRoutes module
 exports.router.delete('/delete/:scoreId', (req, res) => {
-    log.debug(__filename, req.url, 'Handling request -> ' + req.path);
-    let docId = req.params.scoreId;
-    sf.deleteDoc(config.MONGO_COL_SCORES, docId, req)
-        .then(result => {
-        res.status(200).json(result);
-    })
-        .catch(err => {
-        res.status(500).json(err);
-    });
+    const docId = req.params.scoreId;
+    sRt.deleteDoc(config.MONGO_COL_SCORES, docId, req, res);
 });
 // capture all unhandled routes
-exports.router.get('/*', unhandledRoute);
-exports.router.put('/*', unhandledRoute);
-exports.router.delete('/*', unhandledRoute);
-exports.router.post('/*', unhandledRoute);
+exports.router.get('/*', sRt.unhandledRoute);
+exports.router.put('/*', sRt.unhandledRoute);
+exports.router.delete('/*', sRt.unhandledRoute);
+exports.router.post('/*', sRt.unhandledRoute);
 // expose router as module
 exports.default = exports.router;
 //# sourceMappingURL=scoreRouter.js.map
