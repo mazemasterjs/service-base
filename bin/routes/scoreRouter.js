@@ -75,7 +75,7 @@ exports.router.put('/insert', (req, res) => {
         res.status(200).json(result);
     })
         .catch(err => {
-        res.status(200).json(err);
+        res.status(500).json(err);
     });
 });
 // update existing document body in scores collection
@@ -86,7 +86,7 @@ exports.router.put('/update', (req, res) => {
         res.status(200).json(result);
     })
         .catch(err => {
-        res.status(200).json(err);
+        res.status(500).json(err);
     });
 });
 // delete a document from the scores collection that matches the given id
@@ -98,7 +98,7 @@ exports.router.delete('/delete/:scoreId', (req, res) => {
         res.status(200).json(result);
     })
         .catch(err => {
-        res.status(200).json(err);
+        res.status(500).json(err);
     });
 });
 // capture all unhandled routes

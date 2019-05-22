@@ -72,7 +72,7 @@ router.put('/insert', (req, res) => {
       res.status(200).json(result);
     })
     .catch(err => {
-      res.status(200).json(err);
+      res.status(500).json(err);
     });
 });
 
@@ -84,7 +84,7 @@ router.put('/update', (req, res) => {
       res.status(200).json(result);
     })
     .catch(err => {
-      res.status(200).json(err);
+      res.status(500).json(err);
     });
 });
 
@@ -97,7 +97,7 @@ router.delete('/delete/:scoreId', (req, res) => {
       res.status(200).json(result);
     })
     .catch(err => {
-      res.status(200).json(err);
+      res.status(500).json(err);
     });
 });
 
