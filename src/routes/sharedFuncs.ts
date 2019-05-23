@@ -1,14 +1,9 @@
-import { Maze } from '@mazemasterjs/shared-library/Maze';
-import fs, { promises } from 'fs';
 import { Request } from 'express';
 import Logger from '@mazemasterjs/logger';
 import { Score } from '@mazemasterjs/shared-library/Score';
 import { Trophy } from '@mazemasterjs/shared-library/Trophy';
-import path from 'path';
-import { Team } from '@mazemasterjs/shared-library/Team';
 import Config from '../Config';
 import DatabaseManager from '@mazemasterjs/database-manager/DatabaseManager';
-import { resolve } from 'dns';
 import { DeleteWriteOpResultObject, InsertOneWriteOpResult, UpdateWriteOpResult } from 'mongodb';
 
 const log = Logger.getInstance();
@@ -74,6 +69,7 @@ export async function insertDoc(colName: string, req: Request): Promise<InsertOn
   return await dbMan
     .insertDocument(colName, doc)
     .then(result => {
+      log.debug(__filename, req.url, `${result.insertedCount} documents inserted.`);
       return Promise.resolve(result);
     })
     .catch(err => {
@@ -162,7 +158,12 @@ export async function getDocs(colName: string, req: Request): Promise<Array<any>
   // build the json object containing score parameters to search for
   for (const key in req.query) {
     if (req.query.hasOwnProperty(key)) {
-      query[key] = req.query[key];
+      // check for and preserve numeric parameters
+      if (isNaN(req.query[key])) {
+        query[key] = req.query[key];
+      } else {
+        query[key] = parseInt(req.query[key], 10);
+      }
     }
   }
 

@@ -116,7 +116,8 @@ function launchExpress() {
         // and start the httpServer - starts the service
         httpServer = app.listen(config.HTTP_PORT, () => {
             // sever is now listening - live probe should be active, but ready probe must wait for routes to be mapped.
-            log.info(__filename, 'launchExpress()', `http://${os_1.hostname}:${config.HTTP_PORT}${config.Service.BaseUrl} -> Service is now LIVE, and READY!'`);
+            log.force(__filename, 'launchExpress()', `http://${os_1.hostname}:${config.HTTP_PORT}${config.Service.BaseUrl} -> Listening...`);
+            log.force(__filename, 'launchExpress()', `[ ${config.Service.Name.toUpperCase()}-SERVICE ] is now LIVE and READY!'`);
         });
     });
 }

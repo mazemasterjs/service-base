@@ -77,6 +77,7 @@ function insertDoc(colName, req) {
         return yield dbMan
             .insertDocument(colName, doc)
             .then(result => {
+            log.debug(__filename, req.url, `${result.insertedCount} documents inserted.`);
             return Promise.resolve(result);
         })
             .catch(err => {
@@ -166,7 +167,13 @@ function getDocs(colName, req) {
         // build the json object containing score parameters to search for
         for (const key in req.query) {
             if (req.query.hasOwnProperty(key)) {
-                query[key] = req.query[key];
+                // check for and preserve numeric parameters
+                if (isNaN(req.query[key])) {
+                    query[key] = req.query[key];
+                }
+                else {
+                    query[key] = parseInt(req.query[key], 10);
+                }
             }
         }
         try {

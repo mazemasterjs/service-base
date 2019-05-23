@@ -22,7 +22,7 @@
   "dependencies": {
     "@mazemasterjs/database-manager": "^1.3.0",
     "@mazemasterjs/logger": "^1.0.10",
-    "@mazemasterjs/shared-library": "^1.6.1",
+    "@mazemasterjs/shared-library": "^1.6.3",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "express": "^4.17.0",
