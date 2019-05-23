@@ -19,7 +19,7 @@ class Config {
          * @param typeName - tye name of the type to return the value as (string | number)
          */
         this.getVar = (varName, typeName) => {
-            let val = process.env[varName];
+            const val = process.env[varName];
             // first see if the variable was found - if not, let's blow this sucker up
             if (val === undefined) {
                 this.doError(`getVar(${varName}, ${typeName})`, 'Configuration Error', `Environment variable not set: ${varName}`);
@@ -53,6 +53,9 @@ class Config {
         this.CURSOR_LIMIT_SCORES = this.getVar('CURSOR_LIMIT_SCORES', 'number');
         this.CURSOR_LIMIT_TEAMS = this.getVar('CURSOR_LIMIT_TEAMS', 'number');
         this.CURSOR_LIMIT_TROPHIES = this.getVar('CURSOR_LIMIT_TROPHIES', 'number');
+        this.DATA_FILE_TROPHIES = this.getVar('DATA_FILE_TROPHIES', 'string');
+        this.DATA_FILE_MAZES = this.getVar('DATA_FILE_MAZES', 'string');
+        // service-specific initialization
         this.service = this.loadServiceData(this.SERVICE_DOC_FILE);
         this.nonProdPortOverride();
     }
@@ -60,10 +63,10 @@ class Config {
      * Instantiate and/or returns class instance
      */
     static getInstance() {
-        if (this._instance === undefined) {
-            this._instance = new Config();
+        if (this.instance === undefined) {
+            this.instance = new Config();
         }
-        return this._instance;
+        return this.instance;
     }
     /**
      * Returns a populated instance of the  Service class.
@@ -99,8 +102,8 @@ class Config {
                 break;
             }
             case 'trophy': {
-                if (process.env.HTTP_PORT_TROPPHY) {
-                    this.HTTP_PORT = parseInt(process.env.HTTP_PORT_TROPPHY + '', 10);
+                if (process.env.HTTP_PORT_TROPHY) {
+                    this.HTTP_PORT = parseInt(process.env.HTTP_PORT_TROPHY + '', 10);
                     log.debug(__filename, 'nonProdPortOverride()', `Non-prod service port for ${this.service.Name} override: HTTP_PORT is now ${this.HTTP_PORT} `);
                 }
                 break;
@@ -125,6 +128,13 @@ class Config {
         // and return the service
         return svc;
     }
+    /**
+     * Wrapping log.error to clean things up a little
+     *
+     * @param method
+     * @param title
+     * @param message
+     */
     doError(method, title, message) {
         const err = new Error(message);
         log.error(__filename, method, title + ' ->', err);

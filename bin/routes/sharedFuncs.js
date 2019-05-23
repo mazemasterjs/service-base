@@ -68,7 +68,7 @@ function insertDoc(colName, req) {
         let doc;
         // first attempt to convert the document to an object using new <T>(data)
         try {
-            doc = coerceJson(colName, req.body);
+            doc = coerce(colName, req.body);
         }
         catch (err) {
             return Promise.reject({ error: 'Invalid Data', message: err.message });
@@ -99,7 +99,7 @@ function updateDoc(colName, req) {
         const docId = doc.id;
         // first attempt to convert the document to an object using new <T>(data)
         try {
-            doc = coerceJson(colName, req.body);
+            doc = coerce(colName, req.body);
         }
         catch (err) {
             return Promise.reject({ error: 'Invalid Data', message: err.message });
@@ -179,7 +179,7 @@ function getDocs(colName, req) {
                     // can't easily use Array.concat, so have to loop and push
                     for (const doc of page) {
                         try {
-                            const tmpDoc = coerceJson(colName, doc);
+                            const tmpDoc = coerce(colName, doc);
                             docs.push(tmpDoc);
                         }
                         catch (err) {
@@ -215,9 +215,9 @@ exports.getDocs = getDocs;
  * @param jsonDoc
  * @param typeName
  */
-function coerceJson(colName, jsonDoc) {
+function coerce(colName, jsonDoc) {
     let className = '';
-    const method = `jsonToClass(${colName}, jsonDoc)`;
+    const method = `coerce(${colName}, jsonDoc)`;
     try {
         switch (colName) {
             case config.MONGO_COL_SCORES: {
@@ -226,8 +226,8 @@ function coerceJson(colName, jsonDoc) {
                 return new Score_1.Score(jsonDoc);
             }
             case config.MONGO_COL_TROPHIES: {
-                log.debug(__filename, method, `Attempting type coercion: JSON -> ${className}`);
                 className = Trophy_1.Trophy.name;
+                log.debug(__filename, method, `Attempting type coercion: JSON -> ${className}`);
                 return new Trophy_1.Trophy(jsonDoc);
             }
             default: {
@@ -238,7 +238,7 @@ function coerceJson(colName, jsonDoc) {
     }
     catch (error) {
         const err = new Error(`Unable to coerce JSON into ${className} -> ${error.message}`);
-        log.error(__filename, `jsonToClass(${colName}, req)`, `Data Error ->`, err);
+        log.error(__filename, `coerce(${colName}, req)`, `Data Error ->`, err);
         throw err;
     }
 }

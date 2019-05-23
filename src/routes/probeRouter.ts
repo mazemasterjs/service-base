@@ -13,7 +13,7 @@ const RES_READY_TRUE: object = { probeType: 'readiness', status: 'ready' };
  * Liveness probe for container/cloud hosted service monitoring
  */
 probeRouter.get('/live', (req, res) => {
-  log.trace(__filename, 'Route -> [' + req.url + ']', JSON.stringify(RES_LIVE_TRUE));
+  log.debug(__filename, req.path, 'Handling request -> ' + req.url);
   res.status(200).json(RES_LIVE_TRUE);
 });
 
@@ -21,7 +21,7 @@ probeRouter.get('/live', (req, res) => {
  * Readiness probe for container/cloud hosted service monitoring
  */
 probeRouter.get('/ready', (req, res) => {
-  log.trace(__filename, 'Route -> [' + req.url + ']', JSON.stringify(RES_READY_TRUE));
+  log.debug(__filename, req.path, 'Handling request -> ' + req.url);
   res.status(200).json(RES_READY_TRUE);
 });
 
