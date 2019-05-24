@@ -22,11 +22,6 @@ const express_1 = __importDefault(require("express"));
 const compression_1 = __importDefault(require("compression"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const logger_1 = require("@mazemasterjs/logger");
-// import { mazeRouter } from './routes/mazeRoutes';
-// import { scoreRouter } from './routes/scoreRoutes';
-// import { teamRouter } from './routes/teamRoutes';
-// import { trophyRouter } from './routes/trophyRoutes';
-const probeRouter_1 = require("./routes/probeRouter");
 const DatabaseManager_1 = __importDefault(require("@mazemasterjs/database-manager/DatabaseManager"));
 const cors_1 = __importDefault(require("cors"));
 const Config_1 = __importDefault(require("./Config"));
@@ -89,10 +84,6 @@ function launchExpress() {
                 next();
             });
         });
-        // set up the probes router (live/ready checks)
-        log.force(__filename, 'launchExpress()', 'Loading [./routes/probeRouter]...');
-        app.use(config.Service.BaseUrl + '/probes', probeRouter_1.probeRouter);
-        log.force(__filename, 'launchExpress()', '    ... [./routes/probeRouter] loaded.');
         // Dynamically load the routes module based on the environment configuration
         // specified by SERVICE_NAME
         const modulePath = `./routes/${config.Service.Name}Router`;
@@ -116,7 +107,7 @@ function launchExpress() {
         // and start the httpServer - starts the service
         httpServer = app.listen(config.HTTP_PORT, () => {
             // sever is now listening - live probe should be active, but ready probe must wait for routes to be mapped.
-            log.force(__filename, 'launchExpress()', `http://${os_1.hostname}:${config.HTTP_PORT}${config.Service.BaseUrl} -> Listening...`);
+            log.force(__filename, 'launchExpress()', `Express is listening -> http://${os_1.hostname}:${config.HTTP_PORT}${config.Service.BaseUrl}`);
             log.force(__filename, 'launchExpress()', `[ ${config.Service.Name.toUpperCase()}-SERVICE ] is now LIVE and READY!'`);
         });
     });

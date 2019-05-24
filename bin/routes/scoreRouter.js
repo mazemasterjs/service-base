@@ -63,6 +63,9 @@ exports.router.delete('/delete/:scoreId', (req, res) => {
     const docId = req.params.scoreId;
     sRt.deleteDoc(config.MONGO_COL_SCORES, docId, req, res);
 });
+// map the live/ready probes
+exports.router.get('/probes/live', sRt.livenessProbe);
+exports.router.get('/probes/ready', sRt.readinessProbe);
 // capture all unhandled routes
 exports.router.get('/*', sRt.unhandledRoute);
 exports.router.put('/*', sRt.unhandledRoute);

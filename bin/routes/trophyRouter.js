@@ -135,6 +135,9 @@ exports.router.delete('/delete/:trophyId', (req, res) => {
     const docId = req.params.trophyId;
     sRt.deleteDoc(config.MONGO_COL_TROPHIES, docId, req, res);
 });
+// map the live/ready probes
+exports.router.get('/probes/live', sRt.livenessProbe);
+exports.router.get('/probes/ready', sRt.readinessProbe);
 // capture all unhandled routes
 exports.router.get('/*', sRt.unhandledRoute);
 exports.router.put('/*', sRt.unhandledRoute);

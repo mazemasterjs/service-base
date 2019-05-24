@@ -105,6 +105,26 @@ exports.deleteDoc = (colName, docId, req, res) => {
     });
 };
 /**
+ * Readiness probe for K8s/OpenShift - response indicates service ready
+ *
+ * @param req
+ * @param res
+ */
+exports.readinessProbe = (req, res) => {
+    log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    res.status(200).json({ probeType: 'readiness', status: 'ready' });
+};
+/**
+ * Readiness probe for K8s/OpenShift - response indicates service alive
+ *
+ * @param req
+ * @param res
+ */
+exports.livenessProbe = (req, res) => {
+    log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    res.status(200).json({ probeType: 'liveness', status: 'alive' });
+};
+/**
  * Responds with 404 and help message.
  *
  * @param req

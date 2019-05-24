@@ -2,11 +2,6 @@ import express, { Application, Router } from 'express';
 import compression from 'compression';
 import bodyParser from 'body-parser';
 import { Logger } from '@mazemasterjs/logger';
-// import { mazeRouter } from './routes/mazeRoutes';
-// import { scoreRouter } from './routes/scoreRoutes';
-// import { teamRouter } from './routes/teamRoutes';
-// import { trophyRouter } from './routes/trophyRoutes';
-import { probeRouter } from './routes/probeRouter';
 import DatabaseManager from '@mazemasterjs/database-manager/DatabaseManager';
 import { Server } from 'http';
 import cors from 'cors';
@@ -78,11 +73,6 @@ async function launchExpress() {
     });
   });
 
-  // set up the probes router (live/ready checks)
-  log.force(__filename, 'launchExpress()', 'Loading [./routes/probeRouter]...');
-  app.use(config.Service.BaseUrl + '/probes', probeRouter);
-  log.force(__filename, 'launchExpress()', '    ... [./routes/probeRouter] loaded.');
-
   // Dynamically load the routes module based on the environment configuration
   // specified by SERVICE_NAME
   const modulePath = `./routes/${config.Service.Name}Router`;
@@ -110,7 +100,7 @@ async function launchExpress() {
   // and start the httpServer - starts the service
   httpServer = app.listen(config.HTTP_PORT, () => {
     // sever is now listening - live probe should be active, but ready probe must wait for routes to be mapped.
-    log.force(__filename, 'launchExpress()', `http://${hostname}:${config.HTTP_PORT}${config.Service.BaseUrl} -> Listening...`);
+    log.force(__filename, 'launchExpress()', `Express is listening -> http://${hostname}:${config.HTTP_PORT}${config.Service.BaseUrl}`);
     log.force(__filename, 'launchExpress()', `[ ${config.Service.Name.toUpperCase()}-SERVICE ] is now LIVE and READY!'`);
   });
 }

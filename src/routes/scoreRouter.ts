@@ -63,6 +63,10 @@ router.delete('/delete/:scoreId', (req, res) => {
   sRt.deleteDoc(config.MONGO_COL_SCORES, docId, req, res);
 });
 
+// map the live/ready probes
+router.get('/probes/live', sRt.livenessProbe);
+router.get('/probes/ready', sRt.readinessProbe);
+
 // capture all unhandled routes
 router.get('/*', sRt.unhandledRoute);
 router.put('/*', sRt.unhandledRoute);
