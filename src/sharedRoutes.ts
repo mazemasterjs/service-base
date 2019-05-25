@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
-import { Config } from '../Config';
+import { ServiceConfig } from './ServiceConfig';
 import { Logger } from '@mazemasterjs/logger';
 import * as sFn from './sharedFuncs';
 
 // set constant utility references
 const log = Logger.getInstance();
-const config = Config.getInstance();
+const config = ServiceConfig.getInstance();
 const svcColName = getSvcColName();
 
 /**

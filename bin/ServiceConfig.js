@@ -8,7 +8,7 @@ const Service_1 = __importDefault(require("@mazemasterjs/shared-library/Service"
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const log = logger_1.default.getInstance();
-class Config {
+class ServiceConfig {
     // singleton pattern - constructor is private, use static Config.getInstance()
     constructor() {
         /**
@@ -64,7 +64,7 @@ class Config {
      */
     static getInstance() {
         if (this.instance === undefined) {
-            this.instance = new Config();
+            this.instance = new ServiceConfig();
         }
         return this.instance;
     }
@@ -141,6 +141,6 @@ class Config {
         throw err;
     }
 }
-exports.Config = Config;
-exports.default = Config;
-//# sourceMappingURL=Config.js.map
+exports.ServiceConfig = ServiceConfig;
+exports.default = ServiceConfig;
+//# sourceMappingURL=ServiceConfig.js.map

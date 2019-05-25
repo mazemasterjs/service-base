@@ -5,20 +5,20 @@ import path from 'path';
 
 const log = Logger.getInstance();
 
-export class Config {
+export class ServiceConfig {
   /**
    * Instantiate and/or returns class instance
    */
-  public static getInstance(): Config {
+  public static getInstance(): ServiceConfig {
     if (this.instance === undefined) {
-      this.instance = new Config();
+      this.instance = new ServiceConfig();
     }
 
     return this.instance;
   }
 
   // singleton instance reference
-  private static instance: Config;
+  private static instance: ServiceConfig;
 
   // public member vars
   public SERVICE_DOC_FILE: string;
@@ -176,4 +176,4 @@ export class Config {
   }
 }
 
-export default Config;
+export default ServiceConfig;
