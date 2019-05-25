@@ -6,10 +6,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const ServiceConfig_1 = require("./ServiceConfig");
 const logger_1 = require("@mazemasterjs/logger");
 const sFn = __importStar(require("./sharedFuncs"));
+const Maze_1 = __importDefault(require("@mazemasterjs/shared-library/Maze"));
 // set constant utility references
 const log = logger_1.Logger.getInstance();
 const config = ServiceConfig_1.ServiceConfig.getInstance();
@@ -177,8 +181,29 @@ exports.getServiceDoc = (req, res) => {
  * @param res
  */
 exports.readinessProbe = (req, res) => {
-    log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    log.trace(__filename, req.path, 'Handling request -> ' + req.url);
     res.status(200).json({ probeType: 'readiness', status: 'ready' });
+};
+/**
+ * Generates a maze with the given parameters and returns it as JSON
+ *
+ * @param req
+ * @param res
+ */
+exports.generateMaze = (req, res) => {
+    log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    const height = req.params.height;
+    const width = req.params.width;
+    const challenge = req.params.challenge;
+    const name = req.params.name;
+    const seed = req.params.seed;
+    try {
+        const maze = new Maze_1.default().generate(height, width, challenge, name, seed);
+        res.status(200).json(maze);
+    }
+    catch (err) {
+        res.status(500).json({ status: '500 - Server Error', error: err.message });
+    }
 };
 /**
  * Readiness probe for K8s/OpenShift - response indicates service alive
@@ -187,7 +212,7 @@ exports.readinessProbe = (req, res) => {
  * @param res
  */
 exports.livenessProbe = (req, res) => {
-    log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    log.trace(__filename, req.path, 'Handling request -> ' + req.url);
     res.status(200).json({ probeType: 'liveness', status: 'alive' });
 };
 /**

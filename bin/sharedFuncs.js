@@ -22,6 +22,7 @@ const ServiceConfig_1 = __importDefault(require("./ServiceConfig"));
 const DatabaseManager_1 = __importDefault(require("@mazemasterjs/database-manager/DatabaseManager"));
 // mongo projection for maze get/all (only return stubs)
 const MAZE_STUB_PROJECTION = { _id: 0, cells: 0, textRender: 0, startCell: 0, finishCell: 0 };
+const TEAM_STUB_PROJECTION = { _id: 0, bots: 0, trophies: 0 };
 // global object instances
 const log = logger_1.default.getInstance();
 const config = ServiceConfig_1.default.getInstance();
@@ -181,7 +182,7 @@ function getDocs(colName, req) {
         const query = buildQueryJson(req.query);
         // set the appropriate projection
         const projection = getProjection(colName, query);
-        const stubbed = Object.entries(projection).length === 0;
+        const stubbed = Object.entries(projection).length > 1;
         try {
             // loop through the paged list of docs and build a return array.
             while (!done) {
@@ -232,7 +233,9 @@ function coerce(colName, jsonDoc, isStub) {
     let className = '';
     const method = `coerce(${colName}, jsonDoc)`;
     // stubs can't be coerced - this will force default case
-    colName += '_stub';
+    if (isStub) {
+        colName += '_stub';
+    }
     // attempt to coerce data into class based on collection name
     try {
         switch (colName) {
@@ -292,7 +295,7 @@ exports.generateDocs = (colName, dataFile) => __awaiter(this, void 0, void 0, fu
         // catch type/parsing errors and abort!
         try {
             // mazes have to be generated
-            if (config.MONGO_COL_MAZES) {
+            if (colName === config.MONGO_COL_MAZES) {
                 typedObj = new Maze_1.Maze().generate(ele.height, ele.width, ele.challenge, ele.name, ele.seed);
             }
             else {
@@ -347,11 +350,27 @@ exports.generateDocs = (colName, dataFile) => __awaiter(this, void 0, void 0, fu
  */
 function getProjection(colName, query) {
     const stubKey = 'stub';
-    if (colName === config.MONGO_COL_MAZES) {
-        if (Object.entries(query).length === 0 || query[stubKey] === 'true') {
+    log.debug(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Getting projection.');
+    if (Object.entries(query).length > 0) {
+        if (query[stubKey] === 'true') {
             delete query[stubKey];
-            return MAZE_STUB_PROJECTION;
+            switch (colName) {
+                case config.MONGO_COL_MAZES: {
+                    log.debug(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Stub flag found, returning MAZE_STUB_PROJECTION');
+                    return MAZE_STUB_PROJECTION;
+                }
+                case config.MONGO_COL_TEAMS: {
+                    log.debug(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Stub flag found, returning TEAM_STUB_PROJECTION');
+                    return TEAM_STUB_PROJECTION;
+                }
+            }
         }
+    }
+    else if (colName === config.MONGO_COL_MAZES) {
+        // Getting ALL mazes without the ?stub=true flag is a very expensive operation so we are
+        // going to force the use of MAZE_STUB_PROJECTION here to protect performance
+        log.warn(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Request to load ALL maze data without stub flag - enforcing use of MAZE_STUB_PROJECTION!');
+        return MAZE_STUB_PROJECTION;
     }
     return {};
 }

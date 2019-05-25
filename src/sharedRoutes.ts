@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { ServiceConfig } from './ServiceConfig';
 import { Logger } from '@mazemasterjs/logger';
 import * as sFn from './sharedFuncs';
+import Maze from '@mazemasterjs/shared-library/Maze';
 
 // set constant utility references
 const log = Logger.getInstance();
@@ -183,6 +184,28 @@ export const getServiceDoc = (req: Request, res: Response) => {
 export const readinessProbe = (req: Request, res: Response) => {
   log.trace(__filename, req.path, 'Handling request -> ' + req.url);
   res.status(200).json({ probeType: 'readiness', status: 'ready' });
+};
+
+/**
+ * Generates a maze with the given parameters and returns it as JSON
+ *
+ * @param req
+ * @param res
+ */
+export const generateMaze = (req: Request, res: Response) => {
+  log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+  const height: number = req.params.height;
+  const width: number = req.params.width;
+  const challenge: number = req.params.challenge;
+  const name: string = req.params.name;
+  const seed: string = req.params.seed;
+
+  try {
+    const maze: Maze = new Maze().generate(height, width, challenge, name, seed);
+    res.status(200).json(maze);
+  } catch (err) {
+    res.status(500).json({ status: '500 - Server Error', error: err.message });
+  }
 };
 
 /**
