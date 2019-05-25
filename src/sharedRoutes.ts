@@ -181,7 +181,7 @@ export const getServiceDoc = (req: Request, res: Response) => {
  * @param res
  */
 export const readinessProbe = (req: Request, res: Response) => {
-  log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+  log.trace(__filename, req.path, 'Handling request -> ' + req.url);
   res.status(200).json({ probeType: 'readiness', status: 'ready' });
 };
 
@@ -192,7 +192,7 @@ export const readinessProbe = (req: Request, res: Response) => {
  * @param res
  */
 export const livenessProbe = (req: Request, res: Response) => {
-  log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+  log.trace(__filename, req.path, 'Handling request -> ' + req.url);
   res.status(200).json({ probeType: 'liveness', status: 'alive' });
 };
 
