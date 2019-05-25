@@ -10,15 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const commonRouter_1 = require("./routes/commonRouter");
 const compression_1 = __importDefault(require("compression"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const logger_1 = require("@mazemasterjs/logger");
@@ -86,16 +80,19 @@ function launchExpress() {
         });
         // Dynamically load the routes module based on the environment configuration
         // specified by SERVICE_NAME
-        const modulePath = `./routes/${config.Service.Name}Router`;
+        // const modulePath = `./routes/${config.Service.Name}Router`;
+        // log.force(__filename, 'launchExpress()', `SERVICE CONFIGURATION --> ${config.Service.Name} <--`);
+        // log.force(__filename, 'launchExpress()', `Loading [${modulePath}]...`);
+        // await import(modulePath)
+        //   .then(svc => {
+        //     app.use(config.Service.BaseUrl, svc.router);
+        //     log.force(__filename, 'launchExpress()', `    ... [${modulePath}] loaded.`);
+        //   })
+        //   .catch(err => {
+        //     log.error(__filename, 'launchExpress()', `Error loading ./routes/${config.Service.Name}Routes ->`, err);
+        //   });
         log.force(__filename, 'launchExpress()', `SERVICE CONFIGURATION --> ${config.Service.Name} <--`);
-        log.force(__filename, 'launchExpress()', `Loading [${modulePath}]...`);
-        yield Promise.resolve().then(() => __importStar(require(modulePath))).then(svc => {
-            app.use(config.Service.BaseUrl, svc.router);
-            log.force(__filename, 'launchExpress()', `    ... [${modulePath}] loaded.`);
-        })
-            .catch(err => {
-            log.error(__filename, 'launchExpress()', `Error loading ./routes/${config.Service.Name}Routes ->`, err);
-        });
+        app.use(config.Service.BaseUrl, commonRouter_1.commonRouter);
         // catch-all for unhandled requests
         app.get('/*', (req, res) => {
             log.debug(__filename, req.url, 'Invalid Route Requested -> ' + req.url);

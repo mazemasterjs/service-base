@@ -12,28 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sRt = __importStar(require("./sharedRoutes"));
 const Config_1 = __importDefault(require("../Config"));
-const DatabaseManager_1 = __importDefault(require("@mazemasterjs/database-manager/DatabaseManager"));
 const express_1 = __importDefault(require("express"));
 const logger_1 = require("@mazemasterjs/logger");
 exports.router = express_1.default.Router();
 // set module instance references
 const log = logger_1.Logger.getInstance();
 const config = Config_1.default.getInstance();
-// declare dbMan - initialized during startup
-let dbMan;
-/**
- * This just assigns mongo the instance of DatabaseManager.  We shouldn't be
- * able to get here without a database connection and existing instance, but
- * we'll do some logging / error checking anyway.
- */
-DatabaseManager_1.default.getInstance()
-    .then(instance => {
-    dbMan = instance;
-    log.info(__filename, 'DatabaseManager.getInstance()', 'DatabaseManager is ready for use.');
-})
-    .catch(err => {
-    log.error(__filename, 'DatabaseManager.getInstance()', 'Error getting DatabaseManager instance ->', err);
-});
 // respond with the config.Service document
 exports.router.get('/service', (req, res) => {
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);

@@ -13,6 +13,61 @@ const sFn = __importStar(require("./sharedFuncs"));
 // set constant utility references
 const log = logger_1.Logger.getInstance();
 const config = Config_1.Config.getInstance();
+const svcColName = getSvcColName();
+/**
+ * Returns the collection name tied to the given service name
+ *
+ * @param svcName - The name of the service to return collection mapping for
+ * @returns string - The name of the collection mapped to svcName
+ */
+function getSvcColName() {
+    switch (config.Service.Name) {
+        case 'maze': {
+            return config.MONGO_COL_MAZES;
+        }
+        case 'team': {
+            return config.MONGO_COL_TEAMS;
+        }
+        case 'score': {
+            return config.MONGO_COL_SCORES;
+        }
+        case 'trophy': {
+            return config.MONGO_COL_TROPHIES;
+        }
+        default: {
+            return 'SERVICE_COLLECTION_NOT_MAPPED';
+        }
+    }
+}
+exports.generateDocs = (req, res) => {
+    log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    let dataFile;
+    switch (svcColName) {
+        case config.MONGO_COL_MAZES: {
+            dataFile = config.DATA_FILE_MAZES;
+            break;
+        }
+        case config.MONGO_COL_TROPHIES: {
+            dataFile = config.DATA_FILE_TROPHIES;
+            break;
+        }
+    }
+    if (dataFile === undefined) {
+        return res
+            .status(400)
+            .json({ status: '405 - Method Not Supported', message: `Service [ ${config.Service.Name} ] does not support default document generation.` });
+    }
+    else {
+        sFn
+            .generateDocs(svcColName, dataFile)
+            .then(results => {
+            res.status(200).json(results);
+        })
+            .catch(error => {
+            res.status(500).json({ error: error.message });
+        });
+    }
+};
 /**
  * Responds with document count from the given collection
  *
@@ -20,15 +75,15 @@ const config = Config_1.Config.getInstance();
  * @param req Request - incoming HTTPRequest
  * @param res Response - outgoing HTTPResponse
  */
-exports.countDocs = (colName, req, res) => {
+exports.countDocs = (req, res) => {
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);
     sFn
-        .getCount(colName, req)
+        .getCount(svcColName, req)
         .then(count => {
-        res.status(200).json({ collection: colName, count });
+        res.status(200).json({ collection: svcColName, count });
     })
         .catch(err => {
-        res.status(500).json({ collection: colName, error: err, message: err.message });
+        res.status(500).json({ collection: svcColName, error: err, message: err.message });
     });
 };
 /**
@@ -38,10 +93,10 @@ exports.countDocs = (colName, req, res) => {
  * @param req Request - incoming HTTPRequest
  * @param res Response - outgoing HTTPResponse
  */
-exports.getDocs = (colName, req, res) => {
+exports.getDocs = (req, res) => {
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);
     sFn
-        .getDocs(colName, req)
+        .getDocs(svcColName, req)
         .then(docs => {
         res.status(200).json(docs);
     })
@@ -56,10 +111,10 @@ exports.getDocs = (colName, req, res) => {
  * @param req Request - incoming HTTPRequest
  * @param res Response - outgoing HTTPResponse
  */
-exports.insertDoc = (colName, req, res) => {
+exports.insertDoc = (req, res) => {
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);
     sFn
-        .insertDoc(colName, req)
+        .insertDoc(svcColName, req.body)
         .then(result => {
         res.status(200).json(result);
     })
@@ -74,10 +129,10 @@ exports.insertDoc = (colName, req, res) => {
  * @param req Request - incoming HTTPRequest
  * @param res Response - outgoing HTTPResponse
  */
-exports.updateDoc = (colName, req, res) => {
+exports.updateDoc = (req, res) => {
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);
     sFn
-        .updateDoc(colName, req)
+        .updateDoc(svcColName, req.body)
         .then(result => {
         res.status(200).json(result);
     })
@@ -93,16 +148,27 @@ exports.updateDoc = (colName, req, res) => {
  * @param req Request - incoming HTTPRequest
  * @param res Response - outgoing HTTPResponse
  */
-exports.deleteDoc = (colName, docId, req, res) => {
+exports.deleteDoc = (req, res) => {
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    const docId = req.params.docId;
     sFn
-        .deleteDoc(colName, docId, req)
+        .deleteDoc(svcColName, docId)
         .then(result => {
         res.status(200).json(result);
     })
         .catch(err => {
         res.status(500).json(err);
     });
+};
+/**
+ * Respond with the service document describing the current service
+ *
+ * @param req
+ * @param res
+ */
+exports.getServiceDoc = (req, res) => {
+    log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    res.status(200).json(config.Service);
 };
 /**
  * Readiness probe for K8s/OpenShift - response indicates service ready
@@ -134,7 +200,7 @@ exports.unhandledRoute = (req, res) => {
     log.warn(__filename, `Route -> [${req.method} -> ${req.url}]`, 'Unhandled route, returning 404.');
     res.status(404).json({
         status: '404',
-        message: `Route not found.  See ${config.Service.BaseUrl}/service for detailed documentation.`,
+        message: `Route not found.  See ${config.Service.BaseUrl}\service for detailed documentation.`,
     });
 };
 //# sourceMappingURL=sharedRoutes.js.map

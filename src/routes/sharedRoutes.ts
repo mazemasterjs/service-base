@@ -6,6 +6,64 @@ import * as sFn from './sharedFuncs';
 // set constant utility references
 const log = Logger.getInstance();
 const config = Config.getInstance();
+const svcColName = getSvcColName();
+
+/**
+ * Returns the collection name tied to the given service name
+ *
+ * @param svcName - The name of the service to return collection mapping for
+ * @returns string - The name of the collection mapped to svcName
+ */
+function getSvcColName(): string {
+  switch (config.Service.Name) {
+    case 'maze': {
+      return config.MONGO_COL_MAZES;
+    }
+    case 'team': {
+      return config.MONGO_COL_TEAMS;
+    }
+    case 'score': {
+      return config.MONGO_COL_SCORES;
+    }
+    case 'trophy': {
+      return config.MONGO_COL_TROPHIES;
+    }
+    default: {
+      return 'SERVICE_COLLECTION_NOT_MAPPED';
+    }
+  }
+}
+
+export const generateDocs = (req: Request, res: Response) => {
+  log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+  let dataFile;
+
+  switch (svcColName) {
+    case config.MONGO_COL_MAZES: {
+      dataFile = config.DATA_FILE_MAZES;
+      break;
+    }
+    case config.MONGO_COL_TROPHIES: {
+      dataFile = config.DATA_FILE_TROPHIES;
+      break;
+    }
+  }
+
+  if (dataFile === undefined) {
+    return res
+      .status(400)
+      .json({ status: '405 - Method Not Supported', message: `Service [ ${config.Service.Name} ] does not support default document generation.` });
+  } else {
+    sFn
+      .generateDocs(svcColName, dataFile)
+      .then(results => {
+        res.status(200).json(results);
+      })
+      .catch(error => {
+        res.status(500).json({ error: error.message });
+      });
+  }
+};
 
 /**
  * Responds with document count from the given collection
@@ -14,15 +72,15 @@ const config = Config.getInstance();
  * @param req Request - incoming HTTPRequest
  * @param res Response - outgoing HTTPResponse
  */
-export const countDocs = (colName: string, req: Request, res: Response) => {
+export const countDocs = (req: Request, res: Response) => {
   log.debug(__filename, req.path, 'Handling request -> ' + req.url);
   sFn
-    .getCount(colName, req)
+    .getCount(svcColName, req)
     .then(count => {
-      res.status(200).json({ collection: colName, count });
+      res.status(200).json({ collection: svcColName, count });
     })
     .catch(err => {
-      res.status(500).json({ collection: colName, error: err, message: err.message });
+      res.status(500).json({ collection: svcColName, error: err, message: err.message });
     });
 };
 
@@ -33,10 +91,10 @@ export const countDocs = (colName: string, req: Request, res: Response) => {
  * @param req Request - incoming HTTPRequest
  * @param res Response - outgoing HTTPResponse
  */
-export const getDocs = (colName: string, req: Request, res: Response) => {
+export const getDocs = (req: Request, res: Response) => {
   log.debug(__filename, req.path, 'Handling request -> ' + req.url);
   sFn
-    .getDocs(colName, req)
+    .getDocs(svcColName, req)
     .then(docs => {
       res.status(200).json(docs);
     })
@@ -52,10 +110,10 @@ export const getDocs = (colName: string, req: Request, res: Response) => {
  * @param req Request - incoming HTTPRequest
  * @param res Response - outgoing HTTPResponse
  */
-export const insertDoc = (colName: string, req: Request, res: Response) => {
+export const insertDoc = (req: Request, res: Response) => {
   log.debug(__filename, req.path, 'Handling request -> ' + req.url);
   sFn
-    .insertDoc(colName, req)
+    .insertDoc(svcColName, req.body)
     .then(result => {
       res.status(200).json(result);
     })
@@ -71,10 +129,10 @@ export const insertDoc = (colName: string, req: Request, res: Response) => {
  * @param req Request - incoming HTTPRequest
  * @param res Response - outgoing HTTPResponse
  */
-export const updateDoc = (colName: string, req: Request, res: Response) => {
+export const updateDoc = (req: Request, res: Response) => {
   log.debug(__filename, req.path, 'Handling request -> ' + req.url);
   sFn
-    .updateDoc(colName, req)
+    .updateDoc(svcColName, req.body)
     .then(result => {
       res.status(200).json(result);
     })
@@ -91,16 +149,29 @@ export const updateDoc = (colName: string, req: Request, res: Response) => {
  * @param req Request - incoming HTTPRequest
  * @param res Response - outgoing HTTPResponse
  */
-export const deleteDoc = (colName: string, docId: string, req: Request, res: Response) => {
+export const deleteDoc = (req: Request, res: Response) => {
   log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+  const docId = req.params.docId;
+
   sFn
-    .deleteDoc(colName, docId, req)
+    .deleteDoc(svcColName, docId)
     .then(result => {
       res.status(200).json(result);
     })
     .catch(err => {
       res.status(500).json(err);
     });
+};
+
+/**
+ * Respond with the service document describing the current service
+ *
+ * @param req
+ * @param res
+ */
+export const getServiceDoc = (req: Request, res: Response) => {
+  log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+  res.status(200).json(config.Service);
 };
 
 /**
@@ -135,6 +206,6 @@ export const unhandledRoute = (req: Request, res: Response) => {
   log.warn(__filename, `Route -> [${req.method} -> ${req.url}]`, 'Unhandled route, returning 404.');
   res.status(404).json({
     status: '404',
-    message: `Route not found.  See ${config.Service.BaseUrl}/service for detailed documentation.`,
+    message: `Route not found.  See ${config.Service.BaseUrl}\service for detailed documentation.`,
   });
 };
