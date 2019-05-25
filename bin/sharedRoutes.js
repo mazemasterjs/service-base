@@ -7,12 +7,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Config_1 = require("../Config");
+const ServiceConfig_1 = require("./ServiceConfig");
 const logger_1 = require("@mazemasterjs/logger");
 const sFn = __importStar(require("./sharedFuncs"));
 // set constant utility references
 const log = logger_1.Logger.getInstance();
-const config = Config_1.Config.getInstance();
+const config = ServiceConfig_1.ServiceConfig.getInstance();
 const svcColName = getSvcColName();
 /**
  * Returns the collection name tied to the given service name

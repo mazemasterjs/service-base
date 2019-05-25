@@ -18,13 +18,13 @@ const Score_1 = require("@mazemasterjs/shared-library/Score");
 const Trophy_1 = require("@mazemasterjs/shared-library/Trophy");
 const Maze_1 = require("@mazemasterjs/shared-library/Maze");
 const Team_1 = require("@mazemasterjs/shared-library/Team");
-const Config_1 = __importDefault(require("../Config"));
+const ServiceConfig_1 = __importDefault(require("./ServiceConfig"));
 const DatabaseManager_1 = __importDefault(require("@mazemasterjs/database-manager/DatabaseManager"));
 // mongo projection for maze get/all (only return stubs)
 const MAZE_STUB_PROJECTION = { _id: 0, cells: 0, textRender: 0, startCell: 0, finishCell: 0 };
 // global object instances
 const log = logger_1.default.getInstance();
-const config = Config_1.default.getInstance();
+const config = ServiceConfig_1.default.getInstance();
 // declare dbMan - initialized during startup
 let dbMan;
 /**

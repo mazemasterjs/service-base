@@ -1,16 +1,16 @@
 import express from 'express';
-import { commonRouter } from './routes/commonRouter';
+import { commonRouter } from './commonRouter';
 import compression from 'compression';
 import bodyParser from 'body-parser';
 import { Logger } from '@mazemasterjs/logger';
 import DatabaseManager from '@mazemasterjs/database-manager/DatabaseManager';
 import { Server } from 'http';
 import cors from 'cors';
-import Config from './Config';
+import ServiceConfig from './ServiceConfig';
 import { hostname } from 'os';
 
 // load config
-const config = Config.getInstance();
+const config = ServiceConfig.getInstance();
 
 // get and configure logger
 const log = Logger.getInstance();
@@ -73,21 +73,6 @@ async function launchExpress() {
       next();
     });
   });
-
-  // Dynamically load the routes module based on the environment configuration
-  // specified by SERVICE_NAME
-
-  // const modulePath = `./routes/${config.Service.Name}Router`;
-  // log.force(__filename, 'launchExpress()', `SERVICE CONFIGURATION --> ${config.Service.Name} <--`);
-  // log.force(__filename, 'launchExpress()', `Loading [${modulePath}]...`);
-  // await import(modulePath)
-  //   .then(svc => {
-  //     app.use(config.Service.BaseUrl, svc.router);
-  //     log.force(__filename, 'launchExpress()', `    ... [${modulePath}] loaded.`);
-  //   })
-  //   .catch(err => {
-  //     log.error(__filename, 'launchExpress()', `Error loading ./routes/${config.Service.Name}Routes ->`, err);
-  //   });
 
   log.force(__filename, 'launchExpress()', `SERVICE CONFIGURATION --> ${config.Service.Name} <--`);
   app.use(config.Service.BaseUrl, commonRouter);
