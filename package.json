@@ -2,7 +2,7 @@
   "name": "service-base",
   "version": "0.0.1",
   "description": "A configurable, global service base for all MazeMasterJS REST API services.",
-  "main": "index.js",
+  "main": "bin/service.js",
   "scripts": {
     "start": "node ./bin/service.js",
     "scan": "sonar-scanner.bat",
