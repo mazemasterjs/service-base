@@ -339,6 +339,12 @@ exports.generateDocs = (colName, dataFile) => __awaiter(this, void 0, void 0, fu
     log.debug(__filename, method, 'Results:' + JSON.stringify(counts));
     return Promise.resolve(counts);
 });
+/**
+ * Returns a JSON object to use for a mongo query prjection
+ *
+ * @param colName - The collection name to project for
+ * @param query - A JSON object query string with or without a 'stub' key
+ */
 function getProjection(colName, query) {
     const stubKey = 'stub';
     if (colName === config.MONGO_COL_MAZES) {
@@ -349,6 +355,12 @@ function getProjection(colName, query) {
     }
     return {};
 }
+/**
+ * Returns a JSON object represntation of the given request query string
+ *
+ * @param reqQuery - request querystring
+ * @returns any - JSON object
+ */
 function buildQueryJson(reqQuery) {
     const query = {};
     for (const key in reqQuery) {

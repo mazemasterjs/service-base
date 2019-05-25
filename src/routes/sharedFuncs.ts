@@ -338,6 +338,12 @@ export const generateDocs = async (colName: string, dataFile: string) => {
   return Promise.resolve(counts);
 };
 
+/**
+ * Returns a JSON object to use for a mongo query prjection
+ *
+ * @param colName - The collection name to project for
+ * @param query - A JSON object query string with or without a 'stub' key
+ */
 function getProjection(colName: string, query: any): any {
   const stubKey = 'stub';
   if (colName === config.MONGO_COL_MAZES) {
@@ -350,6 +356,12 @@ function getProjection(colName: string, query: any): any {
   return {};
 }
 
+/**
+ * Returns a JSON object represntation of the given request query string
+ *
+ * @param reqQuery - request querystring
+ * @returns any - JSON object
+ */
 function buildQueryJson(reqQuery: any) {
   const query: any = {};
   for (const key in reqQuery) {
