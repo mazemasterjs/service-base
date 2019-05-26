@@ -19,7 +19,7 @@ the designated \*-service.json file into memory and use it's settings to configu
 - get: '/count' - Returns count of all documents in the service collection
 - get: '/count?key=val...' - Returns count of all documents in the service collection matching the query parameters (e.g. api/maze/count?height=3)
 - get: '/get' - Returns all documents (or stubbed data if performance concerns exist, as with mazes)
-- get: '/get?key=val...' - Returns all documents from the service collection that match the query parameters (e.g. api/score/teamId=?MyTeamId)
+- get: '/get?key=val...' - Returns all documents from the service collection that match the query parameters (e.g. api/score?teamId=MyTeamId)
 - get: '/get?key=val...&stub=true' - Adding the stub=true parameter returns a subset of matching data for certain collections (mazes and teams as of v1.0.0)
 - put: '/insert' - Validates and inserts a the JSON document in request.body into the service collection.
 - put: '/update' - Validates and updates a document in the service collection with the JSON document in request.body.
