@@ -36,6 +36,10 @@ the designated \*-service.json file into memory and use it's settings to configu
 
 ## Change Log
 
+### v1.0.1
+
+- Changed scope of most member vars in ConfigService to readonly
+
 ### v1.0.0
 
 - First full release - all services are now running on service-base
