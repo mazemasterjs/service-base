@@ -10,13 +10,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const ServiceConfig_1 = require("./ServiceConfig");
+const Config_1 = require("./Config");
 const logger_1 = require("@mazemasterjs/logger");
-const sFn = __importStar(require("./sharedFuncs"));
+const sFn = __importStar(require("./funcs"));
 const Maze_1 = __importDefault(require("@mazemasterjs/shared-library/Maze"));
 // set constant utility references
 const log = logger_1.Logger.getInstance();
-const config = ServiceConfig_1.ServiceConfig.getInstance();
+const config = Config_1.Config.getInstance();
 const svcColName = getSvcColName();
 /**
  * Returns the collection name tied to the given service name
@@ -192,13 +192,14 @@ exports.readinessProbe = (req, res) => {
  */
 exports.generateMaze = (req, res) => {
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);
-    const height = req.params.height;
-    const width = req.params.width;
-    const challenge = req.params.challenge;
+    const height = parseInt(req.params.height, 10);
+    const width = parseInt(req.params.width, 10);
+    const challenge = parseInt(req.params.challenge, 10);
     const name = req.params.name;
     const seed = req.params.seed;
     try {
         const maze = new Maze_1.default().generate(height, width, challenge, name, seed);
+        const maze2 = new Maze_1.default().generate(3, 3, 3, 'Test', 'Test');
         res.status(200).json(maze);
     }
     catch (err) {
@@ -228,4 +229,4 @@ exports.unhandledRoute = (req, res) => {
         message: `Route not found.  See ${config.Service.BaseUrl}\service for detailed documentation.`,
     });
 };
-//# sourceMappingURL=sharedRoutes.js.map
+//# sourceMappingURL=routes.js.map

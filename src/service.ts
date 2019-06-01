@@ -1,16 +1,16 @@
 import express from 'express';
-import { commonRouter } from './commonRouter';
+import { commonRouter } from './router';
 import compression from 'compression';
 import bodyParser from 'body-parser';
 import { Logger } from '@mazemasterjs/logger';
 import DatabaseManager from '@mazemasterjs/database-manager/DatabaseManager';
 import { Server } from 'http';
 import cors from 'cors';
-import ServiceConfig from './ServiceConfig';
+import Config from './Config';
 import { hostname } from 'os';
 
 // load config
-const config = ServiceConfig.getInstance();
+const config = Config.getInstance();
 
 // get and configure logger
 const log = Logger.getInstance();

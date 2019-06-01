@@ -6,7 +6,7 @@ import { Score } from '@mazemasterjs/shared-library/Score';
 import { Trophy } from '@mazemasterjs/shared-library/Trophy';
 import { Maze } from '@mazemasterjs/shared-library/Maze';
 import { Team } from '@mazemasterjs/shared-library/Team';
-import ServiceConfig from './ServiceConfig';
+import Config from './Config';
 import DatabaseManager from '@mazemasterjs/database-manager/DatabaseManager';
 import { DeleteWriteOpResultObject, InsertOneWriteOpResult, UpdateWriteOpResult } from 'mongodb';
 
@@ -16,7 +16,7 @@ const TEAM_STUB_PROJECTION = { _id: 0, bots: 0, trophies: 0 };
 
 // global object instances
 const log = Logger.getInstance();
-const config = ServiceConfig.getInstance();
+const config = Config.getInstance();
 
 // declare dbMan - initialized during startup
 let dbMan: DatabaseManager;

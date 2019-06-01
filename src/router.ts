@@ -1,11 +1,11 @@
-import * as sRt from './sharedRoutes';
+import * as sRt from './routes';
 import express from 'express';
-import ServiceConfig from './ServiceConfig';
+import Config from './Config';
 
 export const commonRouter = express.Router();
 
 // load the service config
-const config = ServiceConfig.getInstance();
+const config = Config.getInstance();
 
 // map all of the common routes
 commonRouter.get('/service', sRt.getServiceDoc);

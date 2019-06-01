@@ -12,16 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const commonRouter_1 = require("./commonRouter");
+const router_1 = require("./router");
 const compression_1 = __importDefault(require("compression"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const logger_1 = require("@mazemasterjs/logger");
 const DatabaseManager_1 = __importDefault(require("@mazemasterjs/database-manager/DatabaseManager"));
 const cors_1 = __importDefault(require("cors"));
-const ServiceConfig_1 = __importDefault(require("./ServiceConfig"));
+const Config_1 = __importDefault(require("./Config"));
 const os_1 = require("os");
 // load config
-const config = ServiceConfig_1.default.getInstance();
+const config = Config_1.default.getInstance();
 // get and configure logger
 const log = logger_1.Logger.getInstance();
 log.LogLevel = config.LOG_LEVEL;
@@ -79,7 +79,7 @@ function launchExpress() {
             });
         });
         log.force(__filename, 'launchExpress()', `SERVICE CONFIGURATION --> ${config.Service.Name} <--`);
-        app.use(config.Service.BaseUrl, commonRouter_1.commonRouter);
+        app.use(config.Service.BaseUrl, router_1.commonRouter);
         // catch-all for unhandled requests
         app.get('/*', (req, res) => {
             log.debug(__filename, req.url, 'Invalid Route Requested -> ' + req.url);
