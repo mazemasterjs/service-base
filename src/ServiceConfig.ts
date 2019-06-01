@@ -5,37 +5,37 @@ import path from 'path';
 
 const log = Logger.getInstance();
 
-export class Config {
+export class ServiceConfig {
   /**
    * Instantiate and/or returns class instance
    */
-  public static getInstance(): Config {
+  public static getInstance(): ServiceConfig {
     if (this.instance === undefined) {
-      this.instance = new Config();
+      this.instance = new ServiceConfig();
     }
 
     return this.instance;
   }
 
   // singleton instance reference
-  private static instance: Config;
+  private static instance: ServiceConfig;
 
   // public member vars
-  public SERVICE_DOC_FILE: string;
   public HTTP_PORT: number;
-  public LOG_LEVEL: number;
-  public MONGO_COL_MAZES: string;
-  public MONGO_COL_TEAMS: string;
-  public MONGO_COL_SCORES: string;
-  public MONGO_COL_TROPHIES: string;
-  public MONGO_CONNSTR: string;
-  public MONGO_DB: string;
-  public CURSOR_LIMIT_MAZES: number;
-  public CURSOR_LIMIT_SCORES: number;
-  public CURSOR_LIMIT_TEAMS: number;
-  public CURSOR_LIMIT_TROPHIES: number;
-  public DATA_FILE_TROPHIES: string;
-  public DATA_FILE_MAZES: string;
+  public readonly SERVICE_DOC_FILE: string;
+  public readonly LOG_LEVEL: number;
+  public readonly MONGO_COL_MAZES: string;
+  public readonly MONGO_COL_TEAMS: string;
+  public readonly MONGO_COL_SCORES: string;
+  public readonly MONGO_COL_TROPHIES: string;
+  public readonly MONGO_CONNSTR: string;
+  public readonly MONGO_DB: string;
+  public readonly CURSOR_LIMIT_MAZES: number;
+  public readonly CURSOR_LIMIT_SCORES: number;
+  public readonly CURSOR_LIMIT_TEAMS: number;
+  public readonly CURSOR_LIMIT_TROPHIES: number;
+  public readonly DATA_FILE_TROPHIES: string;
+  public readonly DATA_FILE_MAZES: string;
 
   // private member vars
   private service: Service;
@@ -176,4 +176,4 @@ export class Config {
   }
 }
 
-export default Config;
+export default ServiceConfig;

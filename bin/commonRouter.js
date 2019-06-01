@@ -12,7 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sRt = __importStar(require("./sharedRoutes"));
 const express_1 = __importDefault(require("express"));
+const ServiceConfig_1 = __importDefault(require("./ServiceConfig"));
 exports.commonRouter = express_1.default.Router();
+// load the service config
+const config = ServiceConfig_1.default.getInstance();
 // map all of the common routes
 exports.commonRouter.get('/service', sRt.getServiceDoc);
 exports.commonRouter.get('/count', sRt.countDocs);
@@ -20,7 +23,15 @@ exports.commonRouter.get('/get', sRt.getDocs);
 exports.commonRouter.put('/insert', sRt.insertDoc);
 exports.commonRouter.put('/update', sRt.updateDoc);
 exports.commonRouter.delete('/delete/:docId', sRt.deleteDoc);
-exports.commonRouter.get('/regenerate-default-docs', sRt.generateDocs);
+// maze-specific routes
+if (config.Service.Name === 'maze') {
+    exports.commonRouter.get('/regenerate-default-docs', sRt.generateDocs);
+    exports.commonRouter.get('/generate/:height/:width/:challenge/:name/:seed', sRt.generateMaze);
+}
+// trophy-specific routes
+if (config.Service.Name === 'trophy') {
+    exports.commonRouter.get('/regenerate-default-docs', sRt.generateDocs);
+}
 // map the live/ready probes
 exports.commonRouter.get('/probes/live', sRt.livenessProbe);
 exports.commonRouter.get('/probes/ready', sRt.readinessProbe);

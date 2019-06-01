@@ -4,71 +4,94 @@
   "endpoints": [
     {
       "name": "service",
-      "title": "Get service API details",
-      "description": "This document, which describes this service in detail.",
+      "title": "get service API details",
+      "description": "Returns the document you're looking at right now.",
       "method": "get",
       "contentType": "application/json",
       "url": "service",
       "arguments": []
     },
     {
+      "name": "count",
+      "title": "count the documents in the service-specific collection",
+      "description": "Returns a count of documents in the service-specific collection",
+      "contentType": "application/json",
+      "method": "get",
+      "url": "/count",
+      "arguments": []
+    },
+    {
       "name": "get",
-      "title": "Get score(s) data",
-      "description": "Get score(s) matching the given query parameters. Returns all trophies if no parameters are provided. Example: /get?teamId=SomeTeamId&mazeId=3:3:3:Seed",
+      "title": "get one or more documents",
+      "description": "Returns one or more documents meeting the query parameters.  If no querystring parameters are given, all documents will be returned. When getting all mazes, stubbed data will be returned for performance reasons.",
       "method": "get",
       "contentType": "application/json",
-      "url": "get/scores?key=val&key=val...",
-      "arguments": []
-    },
-    {
-      "name": "insert",
-      "title": "Insert a score document",
-      "description": "Insert the JSON representation of a Score object into the scores collection. Full score object must be passed via document body.",
-      "method": "put",
-      "contentType": "application/json",
-      "url": "insert/score",
-      "arguments": []
-    },
-    {
-      "name": "update",
-      "title": "Update a score document",
-      "description": "Update an existing score in the database. Full score object must be passed via document body.",
-      "method": "put",
-      "contentType": "application/json",
-      "url": "update/score",
-      "arguments": []
+      "url": "/get",
+      "arguments": [
+        {
+          "name": "?key=val",
+          "title": "querystring argument",
+          "description": "key: Any valid object field name (lowercase). val: The desired value to match on (case-sensitive). ",
+          "type": "Optional, Any"
+        },
+        {
+          "name": "&stub=true",
+          "title": "querystring argument",
+          "description": "Including stub=true will instruct the service to return a data stub (when available).",
+          "type": "Optional, Any"
+        }
+      ]
     },
     {
       "name": "delete",
-      "title": "Delete a score document",
-      "description": "Delete score(s) matching the given query parameters. Example: /delete/SomeScoreId",
+      "title": "deletes a document",
+      "description": "Deletes a document with the given docId from the service-specific collection.",
       "method": "delete",
       "contentType": "application/json",
-      "url": "delete/{scoreId}",
+      "url": "/delete/{docId}",
       "arguments": [
         {
-          "name": "scoreId",
-          "description": "scoreId is a string GUID that identifies the score document.",
+          "name": "docId",
+          "title": "The ID of the document to delete.",
+          "description": "Usually a GUID, though maze documents have custom ID in the following format: 'height:width:challege:seed' (e.g. 3:5:10:TestMaze:SampleSeed)",
           "type": "string"
         }
       ]
     },
     {
-      "name": "live",
-      "title": "Liveness probe",
-      "description": "Liveness probe for K8s monitoring.",
-      "method": "get",
+      "name": "insert",
+      "title": "upload a document",
+      "description": "Inserts the JSON object request.body into to the service-specific collection.",
+      "method": "put",
       "contentType": "application/json",
-      "url": "probes/live/",
+      "url": "/insert",
+      "arguments": []
+    },
+    {
+      "name": "update",
+      "title": "update a document",
+      "description": "Updates the service-specific collection document with the JSON object found in request.body.",
+      "method": "put",
+      "contentType": "application/json",
+      "url": "/update",
+      "arguments": []
+    },
+    {
+      "name": "live",
+      "title": "check if service is online",
+      "description": "Liveness probe for cluster monitoring.",
+      "contentType": "application/json",
+      "method": "get",
+      "url": "/probes/live",
       "arguments": []
     },
     {
       "name": "ready",
-      "title": "Readiness probe",
-      "description": "Readiness probe for K8s monitoring.",
-      "method": "get",
+      "title": "check if service is ready for use",
+      "description": "Readiness probe for cluster monitoring.",
       "contentType": "application/json",
-      "url": "probes/ready/",
+      "method": "get",
+      "url": "/probes/ready",
       "arguments": []
     }
   ]
