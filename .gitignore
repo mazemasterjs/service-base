@@ -3,6 +3,9 @@
 *.seed
 *.pid.lock
 
+# local IDE config
+.vscode/
+
 # Dependency directories
 node_modules/
 

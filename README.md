@@ -36,6 +36,11 @@ the designated \*-service.json file into memory and use it's settings to configu
 
 ## Change Log
 
+### v1.0.3
+
+- Updated dependencies to pick up maze.generate() number -> string type recasting issue
+- Shortened the names of source files
+
 ### v1.0.1
 
 - Changed scope of most member vars in ConfigService to readonly

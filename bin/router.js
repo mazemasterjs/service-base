@@ -10,12 +10,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const sRt = __importStar(require("./sharedRoutes"));
+const sRt = __importStar(require("./routes"));
 const express_1 = __importDefault(require("express"));
-const ServiceConfig_1 = __importDefault(require("./ServiceConfig"));
+const Config_1 = __importDefault(require("./Config"));
 exports.commonRouter = express_1.default.Router();
 // load the service config
-const config = ServiceConfig_1.default.getInstance();
+const config = Config_1.default.getInstance();
 // map all of the common routes
 exports.commonRouter.get('/service', sRt.getServiceDoc);
 exports.commonRouter.get('/count', sRt.countDocs);
@@ -42,4 +42,4 @@ exports.commonRouter.delete('/*', sRt.unhandledRoute);
 exports.commonRouter.post('/*', sRt.unhandledRoute);
 // expose router as module
 exports.default = exports.commonRouter;
-//# sourceMappingURL=commonRouter.js.map
+//# sourceMappingURL=router.js.map

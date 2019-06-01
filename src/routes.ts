@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { ServiceConfig } from './ServiceConfig';
+import { Config } from './Config';
 import { Logger } from '@mazemasterjs/logger';
-import * as sFn from './sharedFuncs';
+import * as sFn from './funcs';
 import Maze from '@mazemasterjs/shared-library/Maze';
 
 // set constant utility references
 const log = Logger.getInstance();
-const config = ServiceConfig.getInstance();
+const config = Config.getInstance();
 const svcColName = getSvcColName();
 
 /**
@@ -194,14 +194,15 @@ export const readinessProbe = (req: Request, res: Response) => {
  */
 export const generateMaze = (req: Request, res: Response) => {
   log.debug(__filename, req.path, 'Handling request -> ' + req.url);
-  const height: number = req.params.height;
-  const width: number = req.params.width;
-  const challenge: number = req.params.challenge;
+  const height: number = parseInt(req.params.height, 10);
+  const width: number = parseInt(req.params.width, 10);
+  const challenge: number = parseInt(req.params.challenge, 10);
   const name: string = req.params.name;
   const seed: string = req.params.seed;
 
   try {
     const maze: Maze = new Maze().generate(height, width, challenge, name, seed);
+    const maze2: Maze = new Maze().generate(3, 3, 3, 'Test', 'Test');
     res.status(200).json(maze);
   } catch (err) {
     res.status(500).json({ status: '500 - Server Error', error: err.message });
