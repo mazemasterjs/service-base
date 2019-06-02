@@ -1,40 +1,40 @@
-import * as sRt from './routes';
+import * as routes from './routes';
 import express from 'express';
 import Config from './Config';
 
-export const commonRouter = express.Router();
+export const router = express.Router();
 
 // load the service config
 const config = Config.getInstance();
 
 // map all of the common routes
-commonRouter.get('/service', sRt.getServiceDoc);
-commonRouter.get('/count', sRt.countDocs);
-commonRouter.get('/get', sRt.getDocs);
-commonRouter.put('/insert', sRt.insertDoc);
-commonRouter.put('/update', sRt.updateDoc);
-commonRouter.delete('/delete/:docId', sRt.deleteDoc);
+router.get('/service', routes.getServiceDoc);
+router.get('/count', routes.countDocs);
+router.get('/get', routes.getDocs);
+router.put('/insert', routes.insertDoc);
+router.put('/update', routes.updateDoc);
+router.delete('/delete/:docId', routes.deleteDoc);
 
 // maze-specific routes
 if (config.Service.Name === 'maze') {
-  commonRouter.get('/regenerate-default-docs', sRt.generateDocs);
-  commonRouter.get('/generate/:height/:width/:challenge/:name/:seed', sRt.generateMaze);
+  router.get('/regenerate-default-docs', routes.generateDocs);
+  router.get('/generate/:height/:width/:challenge/:name/:seed', routes.generateMaze);
 }
 
 // trophy-specific routes
 if (config.Service.Name === 'trophy') {
-  commonRouter.get('/regenerate-default-docs', sRt.generateDocs);
+  router.get('/regenerate-default-docs', routes.generateDocs);
 }
 
 // map the live/ready probes
-commonRouter.get('/probes/live', sRt.livenessProbe);
-commonRouter.get('/probes/ready', sRt.readinessProbe);
+router.get('/probes/live', routes.livenessProbe);
+router.get('/probes/ready', routes.readinessProbe);
 
 // capture all unhandled requests
-commonRouter.get('/*', sRt.unhandledRoute);
-commonRouter.put('/*', sRt.unhandledRoute);
-commonRouter.delete('/*', sRt.unhandledRoute);
-commonRouter.post('/*', sRt.unhandledRoute);
+router.get('/*', routes.unhandledRoute);
+router.put('/*', routes.unhandledRoute);
+router.delete('/*', routes.unhandledRoute);
+router.post('/*', routes.unhandledRoute);
 
 // expose router as module
-export default commonRouter;
+export default router;
