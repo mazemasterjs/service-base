@@ -19,6 +19,7 @@ node_modules/
 .env
 
 # don't upload test / coverage stuff
+.vscode
 coverage
 .scannerwork
 .sonarlint
