@@ -10,36 +10,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const sRt = __importStar(require("./routes"));
+const routes = __importStar(require("./routes"));
 const express_1 = __importDefault(require("express"));
 const Config_1 = __importDefault(require("./Config"));
-exports.commonRouter = express_1.default.Router();
+exports.router = express_1.default.Router();
 // load the service config
 const config = Config_1.default.getInstance();
 // map all of the common routes
-exports.commonRouter.get('/service', sRt.getServiceDoc);
-exports.commonRouter.get('/count', sRt.countDocs);
-exports.commonRouter.get('/get', sRt.getDocs);
-exports.commonRouter.put('/insert', sRt.insertDoc);
-exports.commonRouter.put('/update', sRt.updateDoc);
-exports.commonRouter.delete('/delete/:docId', sRt.deleteDoc);
+exports.router.get('/service', routes.getServiceDoc);
+exports.router.get('/count', routes.countDocs);
+exports.router.get('/get', routes.getDocs);
+exports.router.put('/insert', routes.insertDoc);
+exports.router.put('/update', routes.updateDoc);
+exports.router.delete('/delete/:docId', routes.deleteDoc);
 // maze-specific routes
 if (config.Service.Name === 'maze') {
-    exports.commonRouter.get('/regenerate-default-docs', sRt.generateDocs);
-    exports.commonRouter.get('/generate/:height/:width/:challenge/:name/:seed', sRt.generateMaze);
+    exports.router.get('/regenerate-default-docs', routes.generateDocs);
+    exports.router.get('/generate/:height/:width/:challenge/:name/:seed', routes.generateMaze);
 }
 // trophy-specific routes
 if (config.Service.Name === 'trophy') {
-    exports.commonRouter.get('/regenerate-default-docs', sRt.generateDocs);
+    exports.router.get('/regenerate-default-docs', routes.generateDocs);
 }
 // map the live/ready probes
-exports.commonRouter.get('/probes/live', sRt.livenessProbe);
-exports.commonRouter.get('/probes/ready', sRt.readinessProbe);
+exports.router.get('/probes/live', routes.livenessProbe);
+exports.router.get('/probes/ready', routes.readinessProbe);
 // capture all unhandled requests
-exports.commonRouter.get('/*', sRt.unhandledRoute);
-exports.commonRouter.put('/*', sRt.unhandledRoute);
-exports.commonRouter.delete('/*', sRt.unhandledRoute);
-exports.commonRouter.post('/*', sRt.unhandledRoute);
+exports.router.get('/*', routes.unhandledRoute);
+exports.router.put('/*', routes.unhandledRoute);
+exports.router.delete('/*', routes.unhandledRoute);
+exports.router.post('/*', routes.unhandledRoute);
 // expose router as module
-exports.default = exports.commonRouter;
+exports.default = exports.router;
 //# sourceMappingURL=router.js.map
