@@ -36,6 +36,10 @@ the designated \*-service.json file into memory and use it's settings to configu
 
 ## Change Log
 
+### v1.0.5
+
+- Removed count and lastUpdated fields from trophy data
+
 ### v1.0.4
 
 - Updated with new database-manager dependency
