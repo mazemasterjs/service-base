@@ -35,7 +35,12 @@ class Config {
                     return parseInt(val + '', 10); // this could blow up, but that's ok since we'd want it to
                 }
                 case 'json-string': {
-                    return JSON.parse(val + '');
+                    // OpenShift's config map keeps adding extra quotes around the JSON string - check for them here and correct them
+                    let jVal = val + '';
+                    if (jVal.substr(0, 1) === '"') {
+                        jVal = jVal.substr(1, jVal.length - 2);
+                    }
+                    return JSON.parse(jVal + '');
                 }
                 default: {
                     // we only want numbers or strings...
