@@ -68,6 +68,11 @@ export async function insertDoc(colName: string, docBody: any): Promise<InsertOn
   // first attempt to convert the document to an object using new <T>(data)
   try {
     doc = coerce(colName, docBody);
+
+    // update score datetime before insert
+    if (colName === config.MONGO_COL_SCORES) {
+      doc.lastUpdated = Date.now();
+    }
   } catch (err) {
     return Promise.reject({ error: 'Invalid Data', message: err.message });
   }
@@ -100,6 +105,11 @@ export async function updateDoc(colName: string, docBody: any): Promise<UpdateWr
   // first attempt to convert the document to an object using new <T>(data)
   try {
     doc = coerce(colName, docBody);
+
+    // update score datetime before insert
+    if (colName === config.MONGO_COL_SCORES) {
+      doc.lastUpdated = Date.now();
+    }
   } catch (err) {
     return Promise.reject({ error: 'Invalid Data', message: err.message });
   }
@@ -236,7 +246,7 @@ function coerce(colName: string, jsonDoc: any, isStub?: boolean): any {
       case config.MONGO_COL_SCORES: {
         className = Score.name;
         log.debug(__filename, method, `Attempting type coercion: JSON -> ${className}`);
-        return new Score(jsonDoc);
+        return Score.fromJson(jsonDoc);
       }
       case config.MONGO_COL_TROPHIES: {
         className = Trophy.name;

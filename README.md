@@ -36,6 +36,12 @@ the designated \*-service.json file into memory and use it's settings to configu
 
 ## Change Log
 
+### v1.0.6
+
+- Added lastUpdated field to Score for query sorting.
+- Insert and Update functions now auto-update Score.lastUpdated during write
+- Updated shared-library version to latest: 1.8.7
+
 ### v1.0.5
 
 - Removed count and lastUpdated fields from trophy data
