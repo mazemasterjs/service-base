@@ -91,6 +91,18 @@
       "bonusAward": -5
     },
     {
+      "id": "STANDING_AROUND",
+      "name": "Standing Around",
+      "description": "Why would you try to stand up when your're already standing up? That makes as much sense as sitting down in a maze filled with traps and deadly, flowing lava...",
+      "bonusAward": 5
+    },
+    {
+      "id": "TAKING_A_STAND",
+      "name": "Taking A Stand",
+      "description": "You learned to stand up - how cute! Awww, wook at dat widdle mousie stand!",
+      "bonusAward": 5
+    },
+    {
       "id": "THE_LONGER_WAY_HOME",
       "name": "The Longer Way Home",
       "description": "Your path through the maze included more than 90% of the rooms.",
