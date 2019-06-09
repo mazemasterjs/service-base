@@ -36,6 +36,22 @@ the designated \*-service.json file into memory and use it's settings to configu
 
 ## Change Log
 
+### v1.0.6
+
+- Added lastUpdated field to Score for query sorting.
+- Insert and Update functions now auto-update Score.lastUpdated during write
+- Updated shared-library version to latest: 1.8.7
+
+### v1.0.5
+
+- Removed count and lastUpdated fields from trophy data
+
+### v1.0.4
+
+- Updated with new database-manager dependency
+- Added support for internal sorting on getDocuments() calls. maze/get sorts by height, width, challenge, team/get sorts by name, score/get sorts by lastUpdated, and trophy/get sorts by name
+- Moved sort and projection keys into environment variables so they can be changed directly on the server
+
 ### v1.0.3
 
 - Updated dependencies to pick up maze.generate() number -> string type recasting issue

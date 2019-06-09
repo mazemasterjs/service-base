@@ -1,5 +1,5 @@
 import express from 'express';
-import { commonRouter } from './router';
+import { router } from './router';
 import compression from 'compression';
 import bodyParser from 'body-parser';
 import { Logger } from '@mazemasterjs/logger';
@@ -75,7 +75,7 @@ async function launchExpress() {
   });
 
   log.force(__filename, 'launchExpress()', `SERVICE CONFIGURATION --> ${config.Service.Name} <--`);
-  app.use(config.Service.BaseUrl, commonRouter);
+  app.use(config.Service.BaseUrl, router);
 
   // catch-all for unhandled requests
   app.get('/*', (req, res) => {

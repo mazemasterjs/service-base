@@ -79,7 +79,7 @@ function launchExpress() {
             });
         });
         log.force(__filename, 'launchExpress()', `SERVICE CONFIGURATION --> ${config.Service.Name} <--`);
-        app.use(config.Service.BaseUrl, router_1.commonRouter);
+        app.use(config.Service.BaseUrl, router_1.router);
         // catch-all for unhandled requests
         app.get('/*', (req, res) => {
             log.debug(__filename, req.url, 'Invalid Route Requested -> ' + req.url);

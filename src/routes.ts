@@ -176,17 +176,6 @@ export const getServiceDoc = (req: Request, res: Response) => {
 };
 
 /**
- * Readiness probe for K8s/OpenShift - response indicates service ready
- *
- * @param req
- * @param res
- */
-export const readinessProbe = (req: Request, res: Response) => {
-  log.trace(__filename, req.path, 'Handling request -> ' + req.url);
-  res.status(200).json({ probeType: 'readiness', status: 'ready' });
-};
-
-/**
  * Generates a maze with the given parameters and returns it as JSON
  *
  * @param req
@@ -221,15 +210,28 @@ export const livenessProbe = (req: Request, res: Response) => {
 };
 
 /**
+ * Readiness probe for K8s/OpenShift - response indicates service ready
+ *
+ * @param req
+ * @param res
+ */
+export const readinessProbe = (req: Request, res: Response) => {
+  log.trace(__filename, req.path, 'Handling request -> ' + req.url);
+  res.status(200).json({ probeType: 'readiness', status: 'ready' });
+};
+
+/**
  * Responds with 404 and help message.
  *
  * @param req
  * @param res
  */
 export const unhandledRoute = (req: Request, res: Response) => {
-  log.warn(__filename, `Route -> [${req.method} -> ${req.url}]`, 'Unhandled route, returning 404.');
+  log.warn(__filename, `Route -> ${req.method} -> ${req.url}`, 'Unhandled route, returning 404.');
   res.status(404).json({
     status: '404',
-    message: `Route not found.  See ${config.Service.BaseUrl}\service for detailed documentation.`,
+    message: `${req.method} route not found, are you sure you're using the right HTTP Method? See ${
+      config.Service.BaseUrl
+    }/service for detailed documentation.`,
   });
 };

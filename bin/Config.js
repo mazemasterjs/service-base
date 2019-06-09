@@ -34,9 +34,12 @@ class Config {
                 case 'number': {
                     return parseInt(val + '', 10); // this could blow up, but that's ok since we'd want it to
                 }
+                case 'json-string': {
+                    return JSON.parse(val + '');
+                }
                 default: {
                     // we only want numbers or strings...
-                    this.doError(`getVar(${varName}, ${typeName})`, 'Argument Error', `Invalid variable type name: ${typeName}. Try 'string' or 'number' instead.`);
+                    this.doError(`getVar(${varName}, ${typeName})`, 'Argument Error', `Invalid variable type name: ${typeName}. Valid type names are: string, number, json-string.`);
                 }
             }
         };
@@ -55,6 +58,12 @@ class Config {
         this.CURSOR_LIMIT_TROPHIES = this.getVar('CURSOR_LIMIT_TROPHIES', 'number');
         this.DATA_FILE_TROPHIES = this.getVar('DATA_FILE_TROPHIES', 'string');
         this.DATA_FILE_MAZES = this.getVar('DATA_FILE_MAZES', 'string');
+        this.MAZE_STUB_PROJECTION = this.getVar('MAZE_STUB_PROJECTION', 'json-string');
+        this.TEAM_STUB_PROJECTION = this.getVar('TEAM_STUB_PROJECTION', 'json-string');
+        this.MAZE_SORT = this.getVar('MAZE_SORT', 'json-string');
+        this.SCORE_SORT = this.getVar('SCORE_SORT', 'json-string');
+        this.TEAM_SORT = this.getVar('TEAM_SORT', 'json-string');
+        this.TROPHY_SORT = this.getVar('TROPHY_SORT', 'json-string');
         // service-specific initialization
         this.service = this.loadServiceData(this.SERVICE_DOC_FILE);
         this.nonProdPortOverride();

@@ -20,9 +20,6 @@ const Maze_1 = require("@mazemasterjs/shared-library/Maze");
 const Team_1 = require("@mazemasterjs/shared-library/Team");
 const Config_1 = __importDefault(require("./Config"));
 const DatabaseManager_1 = __importDefault(require("@mazemasterjs/database-manager/DatabaseManager"));
-// mongo projection for maze get/all (only return stubs)
-const MAZE_STUB_PROJECTION = { _id: 0, cells: 0, textRender: 0, startCell: 0, finishCell: 0 };
-const TEAM_STUB_PROJECTION = { _id: 0, bots: 0, trophies: 0 };
 // global object instances
 const log = logger_1.default.getInstance();
 const config = Config_1.default.getInstance();
@@ -79,6 +76,10 @@ function insertDoc(colName, docBody) {
         // first attempt to convert the document to an object using new <T>(data)
         try {
             doc = coerce(colName, docBody);
+            // update score datetime before insert
+            if (colName === config.MONGO_COL_SCORES) {
+                doc.lastUpdated = Date.now();
+            }
         }
         catch (err) {
             return Promise.reject({ error: 'Invalid Data', message: err.message });
@@ -112,6 +113,10 @@ function updateDoc(colName, docBody) {
         // first attempt to convert the document to an object using new <T>(data)
         try {
             doc = coerce(colName, docBody);
+            // update score datetime before insert
+            if (colName === config.MONGO_COL_SCORES) {
+                doc.lastUpdated = Date.now();
+            }
         }
         catch (err) {
             return Promise.reject({ error: 'Invalid Data', message: err.message });
@@ -138,15 +143,11 @@ exports.updateDoc = updateDoc;
 function getCount(colName, req) {
     return __awaiter(this, void 0, void 0, function* () {
         const method = `getCount(${colName})`;
-        log.debug(__filename, method, 'Counting collection documents...');
-        const query = {};
-        // build the json object containing score parameters to search for
+        log.debug(__filename, method, 'Counting documents...');
+        let query = {};
+        // build the json object containing parameters to search for
         if (req !== undefined) {
-            for (const key in req.query) {
-                if (req.query.hasOwnProperty(key)) {
-                    query[key] = req.query[key];
-                }
-            }
+            query = buildQueryJson(req.query);
         }
         return yield dbMan
             .getDocumentCount(colName, query)
@@ -179,15 +180,16 @@ function getDocs(colName, req) {
         let pageNum = 1;
         let done = false;
         // build the json object containing score parameters to search for
+        const sort = getSortByColName(colName);
         const query = buildQueryJson(req.query);
-        // set the appropriate projection
+        // set the appropriate projections
         const projection = getProjection(colName, query);
         const stubbed = Object.entries(projection).length > 1;
         try {
             // loop through the paged list of docs and build a return array.
             while (!done) {
                 log.debug(__filename, method, `QUERY :: Page ${pageNum}, ${colName}, ${JSON.stringify(query)}`);
-                const page = yield dbMan.getDocuments(colName, query, projection, pageSize, pageNum);
+                const page = yield dbMan.getDocuments(colName, query, sort, projection, pageSize, pageNum);
                 if (page.length > 0) {
                     log.debug(__filename, method, `Page #${pageNum}: Processing ${page.length} document(s).`);
                     // can't easily use Array.concat, so have to loop and push
@@ -247,7 +249,7 @@ function coerce(colName, jsonDoc, isStub) {
             case config.MONGO_COL_SCORES: {
                 className = Score_1.Score.name;
                 log.debug(__filename, method, `Attempting type coercion: JSON -> ${className}`);
-                return new Score_1.Score(jsonDoc);
+                return Score_1.Score.fromJson(jsonDoc);
             }
             case config.MONGO_COL_TROPHIES: {
                 className = Trophy_1.Trophy.name;
@@ -357,11 +359,11 @@ function getProjection(colName, query) {
             switch (colName) {
                 case config.MONGO_COL_MAZES: {
                     log.debug(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Stub flag found, returning MAZE_STUB_PROJECTION');
-                    return MAZE_STUB_PROJECTION;
+                    return config.MAZE_STUB_PROJECTION;
                 }
                 case config.MONGO_COL_TEAMS: {
                     log.debug(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Stub flag found, returning TEAM_STUB_PROJECTION');
-                    return TEAM_STUB_PROJECTION;
+                    return config.TEAM_STUB_PROJECTION;
                 }
             }
         }
@@ -370,7 +372,7 @@ function getProjection(colName, query) {
         // Getting ALL mazes without the ?stub=true flag is a very expensive operation so we are
         // going to force the use of MAZE_STUB_PROJECTION here to protect performance
         log.warn(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Request to load ALL maze data without stub flag - enforcing use of MAZE_STUB_PROJECTION!');
-        return MAZE_STUB_PROJECTION;
+        return config.MAZE_STUB_PROJECTION;
     }
     return {};
 }
@@ -394,5 +396,28 @@ function buildQueryJson(reqQuery) {
         }
     }
     return query;
+}
+/**
+ * Returns the default sort object for the given collection
+ * @param colName
+ */
+function getSortByColName(colName) {
+    switch (colName) {
+        case config.MONGO_COL_MAZES: {
+            return config.MAZE_SORT;
+        }
+        case config.MONGO_COL_SCORES: {
+            return config.SCORE_SORT;
+        }
+        case config.MONGO_COL_TROPHIES: {
+            return config.TROPHY_SORT;
+        }
+        case config.MONGO_COL_TEAMS: {
+            return config.TEAM_SORT;
+        }
+        default: {
+            return {};
+        }
+    }
 }
 //# sourceMappingURL=funcs.js.map
