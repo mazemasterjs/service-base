@@ -97,7 +97,11 @@ export const getDocs = (req: Request, res: Response) => {
   sFn
     .getDocs(svcColName, req)
     .then(docs => {
-      res.status(200).json(docs);
+      if (docs.length === 0) {
+        res.status(404).json();
+      } else {
+        res.status(200).json(docs);
+      }
     })
     .catch(err => {
       res.status(500).json(err);

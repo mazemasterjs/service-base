@@ -36,6 +36,10 @@ the designated \*-service.json file into memory and use it's settings to configu
 
 ## Change Log
 
+### v1.0.9
+
+- getDocs() now returns 404 if no documents were found
+
 ### v1.0.7
 
 - Added some manipulation around JSON environment variable strings to accomodate openshifts config map value management
