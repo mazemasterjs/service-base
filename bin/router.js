@@ -18,11 +18,11 @@ exports.router = express_1.default.Router();
 const config = Config_1.default.getInstance();
 // map all of the common routes
 exports.router.get('/service', routes.getServiceDoc);
-exports.router.get('/count', routes.countDocs);
-exports.router.get('/get', routes.getDocs);
-exports.router.put('/insert', routes.insertDoc);
-exports.router.put('/update', routes.updateDoc);
-exports.router.delete('/delete/:docId', routes.deleteDoc);
+exports.router.get('/count', (req, res) => routes.countDocs(req, res));
+exports.router.get('/get', (req, res) => routes.getDocs(req, res));
+exports.router.put('/insert', (req, res) => routes.insertDoc(req, res));
+exports.router.put('/update', (req, res) => routes.updateDoc(req, res));
+exports.router.delete('/delete/:docId', (req, res) => routes.deleteDoc(req, res));
 // maze-specific routes
 if (config.Service.Name === 'maze') {
     exports.router.get('/regenerate-default-docs', routes.generateDocs);
@@ -31,6 +31,14 @@ if (config.Service.Name === 'maze') {
 // trophy-specific routes
 if (config.Service.Name === 'trophy') {
     exports.router.get('/regenerate-default-docs', routes.generateDocs);
+}
+// team/bot-specific routes
+if (config.Service.Name === 'team') {
+    exports.router.get('/count/botCode', (req, res) => routes.countDocs(req, res, config.MONGO_COL_BOTCODE));
+    exports.router.get('/get/botCode', (req, res) => routes.getDocs(req, res, config.MONGO_COL_BOTCODE));
+    exports.router.put('/insert/botCode', (req, res) => routes.insertDoc(req, res, config.MONGO_COL_BOTCODE));
+    exports.router.put('/update/botCode', (req, res) => routes.updateDoc(req, res, config.MONGO_COL_BOTCODE));
+    exports.router.delete('/delete/botCode/:botId/:version', (req, res) => routes.deleteDoc(req, res, config.MONGO_COL_BOTCODE));
 }
 // map the live/ready probes
 exports.router.get('/probes/live', routes.livenessProbe);

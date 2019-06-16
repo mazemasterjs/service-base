@@ -76,6 +76,85 @@
       "url": "/update",
       "arguments": []
     },
+
+    {
+      "name": "count/botCode",
+      "title": "count the number of bot code versions",
+      "description": "Returns a count of the number of bot code versions for the given botId",
+      "method": "get",
+      "contentType": "application/json",
+      "url": "/count/botCode",
+      "arguments": [
+        {
+          "name": "botId",
+          "title": "botId",
+          "description": "The id of the bot the code is assigned to",
+          "type": "string - Query Parameter [OPTIONAL]"
+        }
+      ]
+    },
+    {
+      "name": "get/botCode",
+      "title": "get bot code",
+      "description": "Gets the code for the given bot id.  By default, latest version is returned. Use ?version=<version-num> or ?version=all to get other versions.",
+      "method": "put",
+      "contentType": "application/json",
+      "url": "/get/botCode",
+      "arguments": [
+        {
+          "name": "botId",
+          "title": "botId",
+          "description": "The id of the bot the code is assigned to. e.g /get/botcode?botId=123abc",
+          "type": "string - query parameter [REQUIRED]"
+        },
+        {
+          "name": "versionNum",
+          "title": "Version Number",
+          "description": "The bot code version. e.g /get/botcode?botId=123abc?version=1",
+          "type": "string - query parameter [OPTIONAL]"
+        }
+      ]
+    },
+    {
+      "name": "insert/botCode",
+      "title": "inserts new bot code version",
+      "description": "Inserts a new, automatically incremented version of the bot code included in JSON document body",
+      "method": "put",
+      "contentType": "application/json",
+      "url": "/insert/botCode",
+      "arguments": []
+    },
+    {
+      "name": "update/botCode",
+      "title": "updates bot code",
+      "description": "Updates the latest version of bot code with the contents of JSON document body",
+      "method": "put",
+      "contentType": "application/json",
+      "url": "/update/botCode/{botId}",
+      "arguments": []
+    },
+    {
+      "name": "delete/botCode",
+      "title": "deletes a bot code version",
+      "description": "Deletes the given bot code version from the given botId - cannot be undone!",
+      "method": "delete",
+      "contentType": "application/json",
+      "url": "/delete/botCode/{botId}/{versionNum}",
+      "arguments": [
+        {
+          "name": "botId",
+          "title": "botId",
+          "description": "The id of the bot the code is assigned to",
+          "type": "string - URL Path Parameter"
+        },
+        {
+          "name": "versionNum",
+          "title": "Version Number",
+          "description": "The bot code version to delete",
+          "type": "number - URL Path Parameter"
+        }
+      ]
+    },
     {
       "name": "live",
       "title": "check if service is online",

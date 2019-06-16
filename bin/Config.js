@@ -54,6 +54,7 @@ class Config {
         this.MONGO_COL_MAZES = this.getVar('MONGO_COL_MAZES', 'string');
         this.MONGO_COL_SCORES = this.getVar('MONGO_COL_SCORES', 'string');
         this.MONGO_COL_TEAMS = this.getVar('MONGO_COL_TEAMS', 'string');
+        this.MONGO_COL_BOTCODE = this.getVar('MONGO_COL_BOTCODE', 'string');
         this.MONGO_COL_TROPHIES = this.getVar('MONGO_COL_TROPHIES', 'string');
         this.MONGO_CONNSTR = this.getVar('MONGO_CONNSTR', 'string');
         this.MONGO_DB = this.getVar('MONGO_DB', 'string');
