@@ -36,13 +36,18 @@ DatabaseManager.getInstance()
  *
  * @param colName
  * @param docId
+ * @param version - number, optional - the version number of a bot code document
  */
-export async function deleteDoc(colName: string, docId: any): Promise<DeleteWriteOpResultObject> {
-  const method = `deleteDoc(${colName}, ${docId}, req)`;
+export async function deleteDoc(colName: string, docId: any, version?: number): Promise<DeleteWriteOpResultObject> {
+  const method = `deleteDoc(${colName}, ${docId}, ${version})`;
   log.debug(__filename, method, 'Attempting to delete document.');
+  let query;
+
+  // special handling is required for bot_code entries
+  query = colName === config.MONGO_COL_BOTCODE ? { botId: docId, version } : { id: docId };
 
   return await dbMan
-    .deleteDocument(colName, { id: docId })
+    .deleteDocument(colName, query)
     .then(result => {
       log.debug(__filename, method, `${result.deletedCount} documents(s) deleted from ${colName}.`);
       return Promise.resolve(result);
@@ -70,7 +75,7 @@ export async function insertDoc(colName: string, docBody: any): Promise<InsertOn
     doc = coerce(colName, docBody);
 
     // update score datetime before insert
-    if (colName === config.MONGO_COL_SCORES) {
+    if (colName === config.MONGO_COL_SCORES || colName === config.MONGO_COL_BOTCODE) {
       doc.lastUpdated = Date.now();
     }
   } catch (err) {
@@ -99,15 +104,18 @@ export async function insertDoc(colName: string, docBody: any): Promise<InsertOn
 export async function updateDoc(colName: string, docBody: any): Promise<UpdateWriteOpResult> {
   const method = `updateDoc(${colName}, ${docBody})`;
   log.debug(__filename, method, 'Updating document.');
-  const docId: any = docBody.id;
+  let query: any;
   let doc: any;
+
+  // special handling is required for bot_code entries
+  query = colName === config.MONGO_COL_BOTCODE ? { botId: docBody.botId, version: docBody.version } : { id: docBody.id };
 
   // first attempt to convert the document to an object using new <T>(data)
   try {
     doc = coerce(colName, docBody);
 
-    // update score datetime before insert
-    if (colName === config.MONGO_COL_SCORES) {
+    // update score and botcode lastUpdated timestamp before update
+    if (colName === config.MONGO_COL_SCORES || colName === config.MONGO_COL_BOTCODE) {
       doc.lastUpdated = Date.now();
     }
   } catch (err) {
@@ -116,7 +124,7 @@ export async function updateDoc(colName: string, docBody: any): Promise<UpdateWr
 
   // then attempt to inser the document into the database
   return await dbMan
-    .updateDocument(colName, { id: docId }, doc)
+    .updateDocument(colName, query, doc)
     .then(result => {
       return Promise.resolve(result);
     })

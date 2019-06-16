@@ -23,6 +23,9 @@ function getSvcColName(): string {
     case 'team': {
       return config.MONGO_COL_TEAMS;
     }
+    case 'botcode': {
+      return config.MONGO_COL_BOTCODE;
+    }
     case 'score': {
       return config.MONGO_COL_SCORES;
     }
@@ -69,33 +72,35 @@ export const generateDocs = (req: Request, res: Response) => {
 /**
  * Responds with document count from the given collection
  *
- * @param colName string - the collection to delete the document from
  * @param req Request - incoming HTTPRequest
  * @param res Response - outgoing HTTPResponse
+ * @param forceColName string - optional - force action against a specific collection
  */
-export const countDocs = (req: Request, res: Response) => {
+export const countDocs = (req: Request, res: Response, forceColName?: string) => {
   log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+  const colName = forceColName ? forceColName : svcColName;
   sFn
-    .getCount(svcColName, req)
+    .getCount(colName, req)
     .then(count => {
-      res.status(200).json({ collection: svcColName, count });
+      res.status(200).json({ collection: colName, count });
     })
     .catch(err => {
-      res.status(500).json({ collection: svcColName, error: err, message: err.message });
+      res.status(500).json({ collection: colName, error: err, message: err.message });
     });
 };
 
 /**
  * Responds with matching JSON documents from the given collection
  *
- * @param colName string - the collection to delete the document from
  * @param req Request - incoming HTTPRequest
  * @param res Response - outgoing HTTPResponse
+ * @param forceColName string - optional - force action against a specific collection
  */
-export const getDocs = (req: Request, res: Response) => {
+export const getDocs = (req: Request, res: Response, forceColName?: string) => {
   log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+  const colName = forceColName ? forceColName : svcColName;
   sFn
-    .getDocs(svcColName, req)
+    .getDocs(colName, req)
     .then(docs => {
       if (docs.length === 0) {
         res.status(404).json();
@@ -111,14 +116,15 @@ export const getDocs = (req: Request, res: Response) => {
 /**
  * Responds with results of document insert activity.
  *
- * @param colName string - the collection to delete the document from
  * @param req Request - incoming HTTPRequest
  * @param res Response - outgoing HTTPResponse
+ * @param forceColName string - optional - force action against a specific collection
  */
-export const insertDoc = (req: Request, res: Response) => {
+export const insertDoc = (req: Request, res: Response, forceColName?: string) => {
   log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+  const colName = forceColName ? forceColName : svcColName;
   sFn
-    .insertDoc(svcColName, req.body)
+    .insertDoc(colName, req.body)
     .then(result => {
       res.status(200).json(result);
     })
@@ -130,14 +136,15 @@ export const insertDoc = (req: Request, res: Response) => {
 /**
  * Responds with results of document update activity.
  *
- * @param colName string - the collection to delete the document from
  * @param req Request - incoming HTTPRequest
  * @param res Response - outgoing HTTPResponse
+ * @param forceColName string - optional - force action against a specific collection
  */
-export const updateDoc = (req: Request, res: Response) => {
+export const updateDoc = (req: Request, res: Response, forceColName?: string) => {
   log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+  const colName = forceColName ? forceColName : svcColName;
   sFn
-    .updateDoc(svcColName, req.body)
+    .updateDoc(colName, req.body)
     .then(result => {
       res.status(200).json(result);
     })
@@ -147,25 +154,39 @@ export const updateDoc = (req: Request, res: Response) => {
 };
 
 /**
- * Responds with results of document update activity.
+ * Responds with results of document delete activity.
  *
- * @param colName string - the collection to delete the document from
- * @param docId string - mmjs-specific document ID
  * @param req Request - incoming HTTPRequest
  * @param res Response - outgoing HTTPResponse
+ * @param forceColName string - optional - force action against a specific collection
  */
-export const deleteDoc = (req: Request, res: Response) => {
+export const deleteDoc = (req: Request, res: Response, forceColName?: string) => {
   log.debug(__filename, req.path, 'Handling request -> ' + req.url);
-  const docId = req.params.docId;
+  const colName = forceColName ? forceColName : svcColName;
+  const docId = colName === config.MONGO_COL_BOTCODE ? req.params.botId : req.params.docId;
+  const version = parseInt(req.params.version, 10);
 
-  sFn
-    .deleteDoc(svcColName, docId)
-    .then(result => {
-      res.status(200).json(result);
-    })
-    .catch(err => {
-      res.status(500).json(err);
-    });
+  // special handling for bot_code documents
+  if (forceColName) {
+    sFn
+      .deleteDoc(colName, docId, version)
+      .then(result => {
+        res.status(200).json(result);
+      })
+      .catch(err => {
+        res.status(500).json(err);
+      });
+  } else {
+    // standard documents aren't versioned
+    sFn
+      .deleteDoc(colName, docId)
+      .then(result => {
+        res.status(200).json(result);
+      })
+      .catch(err => {
+        res.status(500).json(err);
+      });
+  }
 };
 
 /**

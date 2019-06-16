@@ -20,21 +20,36 @@ the designated \*-service.json file into memory and use it's settings to configu
 - get: '/count?key=val...' - Returns count of all documents in the service collection matching the query parameters (e.g. api/maze/count?height=3)
 - get: '/get' - Returns all documents (or stubbed data if performance concerns exist, as with mazes)
 - get: '/get?key=val...' - Returns all documents from the service collection that match the query parameters (e.g. api/score?teamId=MyTeamId)
-- get: '/get?key=val...&stub=true' - Adding the stub=true parameter returns a subset of matching data for certain collections (mazes and teams as of v1.0.0)
-- put: '/insert' - Validates and inserts a the JSON document in request.body into the service collection.
-- put: '/update' - Validates and updates a document in the service collection with the JSON document in request.body.
-- delete: '/delete/:docId - Delete a single document with a matching docId from the service collection.
+- get: '/get?key=val&stub=true' - Adding the stub=true parameter returns a subset of matching data for certain collections (mazes and teams as of v1.0.0)
+- put: '/insert' - Validates and inserts a the JSON document body into the service collection.
+- put: '/update' - Validates and updates a document in the service collection with the JSON document body.
+- delete: '/delete/:docId' - Delete a single document with a matching docId from the service collection.
+
+## Team: Special Endpoints
+
+- get: '/count/botCode' - Returns the total count of bot code documents in the bot_code collection
+- get: '/count/botCode?botId=STRING' - Returns the total count of bot code documents with the matching botId
+- get: '/get/botCode?botId=STRING' - Returns all bot code documents from the bot_code collection that match the given botId (e.g. /get?botId=234ABC)
+- get: '/get/botCode?botId=STRING&version=NUMBER' - Returns the versioned code document for the given bot id (e.g. /get?botId=234ABC&version=3)
+- put: '/insert/botCode' - Inserts a new, versioned bot code document.
+- put: '/update/botCode' - Updates an existing version of a bot code document.
+- delete: '/delete/botCode/:botId/:version' - Deletes a single bot code document with matching botId and version.
 
 ## Maze: Special Endpoints
 
-- get: '/generate/{height}/{width}/{challenge}/{name}/{seed} - Generates a new maze document from the given parameters. The maze is NOT automatically inserted into the database.
-- get: '/regenerate-default-docs - Delete, generate, and insert default documents from default-SERVICE-list.json. Applies only to the maze and trophy services.
+- get: '/generate/{height}/{width}/{challenge}/{name}/{seed}' - Generates a new maze document from the given parameters. The maze is NOT automatically inserted into the database.
+- get: '/regenerate-default-docs' - Delete, generate, and insert default documents from default-SERVICE-list.json. Applies only to the maze and trophy services.
 
 ## Trophy: Special Endpoints
 
-- get: '/regenerate-default-docs - Delete, generate, and insert default documents from default-SERVICE-list.json. Applies only to the maze and trophy services.
+- get: '/regenerate-default-docs' - Delete, generate, and insert default documents from default-SERVICE-list.json. Applies only to the maze and trophy services.
 
 ## Change Log
+
+### v1.1.0
+
+- Added endpoints to service-base/team for managing versioned bot code documents.
+  - Note: I added these to team because we're out of capacity on OpenShift!
 
 ### v1.0.9
 
