@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Request } from 'express';
-import Logger from '@mazemasterjs/logger';
+import Logger, { LOG_LEVELS } from '@mazemasterjs/logger';
 import { Score } from '@mazemasterjs/shared-library/Score';
 import { Trophy } from '@mazemasterjs/shared-library/Trophy';
 import { Maze } from '@mazemasterjs/shared-library/Maze';
@@ -40,7 +40,7 @@ DatabaseManager.getInstance()
  */
 export async function deleteDoc(colName: string, docId: any, version?: number): Promise<DeleteWriteOpResultObject> {
   const method = `deleteDoc(${colName}, ${docId}, ${version})`;
-  log.debug(__filename, method, 'Attempting to delete document.');
+  logDebug(__filename, method, 'Attempting to delete document.');
   let query;
 
   // special handling is required for bot_code entries
@@ -49,7 +49,7 @@ export async function deleteDoc(colName: string, docId: any, version?: number): 
   return await dbMan
     .deleteDocument(colName, query)
     .then(result => {
-      log.debug(__filename, method, `${result.deletedCount} documents(s) deleted from ${colName}.`);
+      logDebug(__filename, method, `${result.deletedCount} documents(s) deleted from ${colName}.`);
       return Promise.resolve(result);
     })
     .catch(err => {
@@ -67,7 +67,7 @@ export async function deleteDoc(colName: string, docId: any, version?: number): 
  */
 export async function insertDoc(colName: string, docBody: any): Promise<InsertOneWriteOpResult> {
   const method = `insertDoc(${colName}, docBody)`;
-  log.debug(__filename, `insertDoc(${colName}, jsonDoc, req)`, 'Inserting document.');
+  logDebug(__filename, `insertDoc(${colName}, jsonDoc, req)`, 'Inserting document.');
   let doc: any;
 
   // first attempt to convert the document to an object using new <T>(data)
@@ -86,7 +86,7 @@ export async function insertDoc(colName: string, docBody: any): Promise<InsertOn
   return await dbMan
     .insertDocument(colName, doc)
     .then(result => {
-      log.debug(__filename, method, `${result.insertedCount} document(s) inserted.`);
+      logDebug(__filename, method, `${result.insertedCount} document(s) inserted.`);
       return Promise.resolve(result);
     })
     .catch(err => {
@@ -103,7 +103,7 @@ export async function insertDoc(colName: string, docBody: any): Promise<InsertOn
  */
 export async function updateDoc(colName: string, docBody: any): Promise<UpdateWriteOpResult> {
   const method = `updateDoc(${colName}, ${docBody})`;
-  log.debug(__filename, method, 'Updating document.');
+  logDebug(__filename, method, 'Updating document.');
   let query: any;
   let doc: any;
 
@@ -142,7 +142,7 @@ export async function updateDoc(colName: string, docBody: any): Promise<UpdateWr
  */
 export async function getCount(colName: string, req?: Request): Promise<number> {
   const method = `getCount(${colName})`;
-  log.debug(__filename, method, 'Counting documents...');
+  logDebug(__filename, method, 'Counting documents...');
   let query: any = {};
 
   // build the json object containing parameters to search for
@@ -153,7 +153,7 @@ export async function getCount(colName: string, req?: Request): Promise<number> 
   return await dbMan
     .getDocumentCount(colName, query)
     .then(count => {
-      log.debug(__filename, method, 'Count=' + count);
+      logDebug(__filename, method, 'Count=' + count);
       return Promise.resolve(count);
     })
     .catch(err => {
@@ -172,7 +172,7 @@ export async function getCount(colName: string, req?: Request): Promise<number> 
  */
 export async function getDocs(colName: string, req: Request): Promise<Array<any>> {
   const method = `getDocs(${colName}, req)`;
-  log.debug(__filename, method, 'Getting requested documents from database.');
+  logDebug(__filename, method, 'Getting requested documents from database.');
 
   // set some vars for page handling
   const pageSize = 10;
@@ -191,11 +191,11 @@ export async function getDocs(colName: string, req: Request): Promise<Array<any>
   try {
     // loop through the paged list of docs and build a return array.
     while (!done) {
-      log.debug(__filename, method, `QUERY :: Page ${pageNum}, ${colName}, ${JSON.stringify(query)}`);
+      logDebug(__filename, method, `QUERY :: Page ${pageNum}, ${colName}, ${JSON.stringify(query)}`);
       const page = await dbMan.getDocuments(colName, query, sort, projection, pageSize, pageNum);
 
       if (page.length > 0) {
-        log.debug(__filename, method, `Page #${pageNum}: Processing ${page.length} document(s).`);
+        logDebug(__filename, method, `Page #${pageNum}: Processing ${page.length} document(s).`);
 
         // can't easily use Array.concat, so have to loop and push
         for (const doc of page) {
@@ -211,14 +211,14 @@ export async function getDocs(colName: string, req: Request): Promise<Array<any>
       // if we don't have at least pageSize elements, we've hit the last page
       if (page.length < pageSize) {
         done = true;
-        log.debug(__filename, method, `-> Finished. ${docs.length} documents documents collected from ${pageNum} pages.`);
+        logDebug(__filename, method, `-> Finished. ${docs.length} documents documents collected from ${pageNum} pages.`);
       } else {
         pageNum++;
       }
     }
 
     // return the results
-    log.debug(__filename, method, `Returning ${docs.length} documents from the '${colName}' collection.`);
+    logDebug(__filename, method, `Returning ${docs.length} documents from the '${colName}' collection.`);
     return Promise.resolve(docs);
   } catch (err) {
     // log the error and return message
@@ -248,26 +248,26 @@ function coerce(colName: string, jsonDoc: any, isStub?: boolean): any {
     switch (colName) {
       case config.MONGO_COL_MAZES: {
         className = Maze.name;
-        log.debug(__filename, method, `Attempting type coercion: JSON -> ${className}`);
+        logTrace(__filename, method, `Attempting type coercion: JSON -> ${className}`);
         return new Maze(jsonDoc);
       }
       case config.MONGO_COL_SCORES: {
         className = Score.name;
-        log.debug(__filename, method, `Attempting type coercion: JSON -> ${className}`);
+        logTrace(__filename, method, `Attempting type coercion: JSON -> ${className}`);
         return Score.fromJson(jsonDoc);
       }
       case config.MONGO_COL_TROPHIES: {
         className = Trophy.name;
-        log.debug(__filename, method, `Attempting type coercion: JSON -> ${className}`);
+        logTrace(__filename, method, `Attempting type coercion: JSON -> ${className}`);
         return new Trophy(jsonDoc);
       }
       case config.MONGO_COL_TEAMS: {
         className = Team.name;
-        log.debug(__filename, method, `Attempting type coercion: JSON -> ${className}`);
+        logTrace(__filename, method, `Attempting type coercion: JSON -> ${className}`);
         return new Team(jsonDoc);
       }
       default: {
-        log.debug(__filename, method, `No coercion mapped for ${colName}, returning unaltered JSON.`);
+        logTrace(__filename, method, `No coercion mapped for ${colName}, returning unaltered JSON.`);
         return jsonDoc;
       }
     }
@@ -287,7 +287,7 @@ function coerce(colName: string, jsonDoc: any, isStub?: boolean): any {
 export const generateDocs = async (colName: string, dataFile: string) => {
   const method = `generateDocs(${colName}, ${dataFile})`;
   const counts = { collection: colName, deleted: 0, inserted: 0, errors: 0 };
-  log.debug(__filename, method, `Attempting to regenerate default ${config.Service.Name} documents from ${dataFile}...`);
+  logDebug(__filename, method, `Attempting to regenerate default ${config.Service.Name} documents from ${dataFile}...`);
 
   // make sure the file exists...
   dataFile = path.resolve(dataFile);
@@ -321,10 +321,10 @@ export const generateDocs = async (colName: string, dataFile: string) => {
     await deleteDoc(colName, typedObj.Id)
       .then(result => {
         if (result.deletedCount && result.deletedCount > 0) {
-          log.debug(__filename, method, `${result.deletedCount} ${config.Service.Name} document(s) with id=${typedObj.Id} deleted`);
+          logDebug(__filename, method, `${result.deletedCount} ${config.Service.Name} document(s) with id=${typedObj.Id} deleted`);
           counts.deleted++;
         } else {
-          log.debug(__filename, method, `${colName} document with id=${typedObj.Id} could not be deleted (may not exist).`);
+          logDebug(__filename, method, `${colName} document with id=${typedObj.Id} could not be deleted (may not exist).`);
         }
       })
       .catch((err: any) => {
@@ -337,7 +337,7 @@ export const generateDocs = async (colName: string, dataFile: string) => {
       .then(result => {
         if (result.insertedCount > 0) {
           counts.inserted++;
-          log.debug(__filename, method, `${config.Service.Name} (id=${typedObj.Id}) inserted.`);
+          logDebug(__filename, method, `${config.Service.Name} (id=${typedObj.Id}) inserted.`);
         } else {
           log.warn(__filename, method, `insertedCount is 0. ${config.Service.Name} (id=${typedObj.Id}) was NOT inserted.`);
         }
@@ -348,7 +348,7 @@ export const generateDocs = async (colName: string, dataFile: string) => {
       });
   }
 
-  log.debug(__filename, method, 'Results:' + JSON.stringify(counts));
+  logDebug(__filename, method, 'Results:' + JSON.stringify(counts));
   return Promise.resolve(counts);
 };
 
@@ -360,18 +360,18 @@ export const generateDocs = async (colName: string, dataFile: string) => {
  */
 function getProjection(colName: string, query: any): any {
   const stubKey = 'stub';
-  log.debug(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Getting projection.');
+  logDebug(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Getting projection.');
   if (Object.entries(query).length > 0) {
     if (query[stubKey] === 'true') {
       delete query[stubKey];
 
       switch (colName) {
         case config.MONGO_COL_MAZES: {
-          log.debug(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Stub flag found, returning MAZE_STUB_PROJECTION');
+          logDebug(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Stub flag found, returning MAZE_STUB_PROJECTION');
           return config.MAZE_STUB_PROJECTION;
         }
         case config.MONGO_COL_TEAMS: {
-          log.debug(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Stub flag found, returning TEAM_STUB_PROJECTION');
+          logDebug(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Stub flag found, returning TEAM_STUB_PROJECTION');
           return config.TEAM_STUB_PROJECTION;
         }
       }
@@ -433,5 +433,17 @@ function getSortByColName(colName: string): any {
     default: {
       return {};
     }
+  }
+}
+
+function logDebug(file: string, method: string, message: string) {
+  if (log.LogLevel >= LOG_LEVELS.DEBUG) {
+    log.debug(file, method, message);
+  }
+}
+
+function logTrace(file: string, method: string, message: string) {
+  if (log.LogLevel >= LOG_LEVELS.DEBUG) {
+    log.trace(file, method, message);
   }
 }
