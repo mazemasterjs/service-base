@@ -10,10 +10,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const logger_1 = __importDefault(require("@mazemasterjs/logger"));
+const logger_1 = __importStar(require("@mazemasterjs/logger"));
 const Score_1 = require("@mazemasterjs/shared-library/Score");
 const Trophy_1 = require("@mazemasterjs/shared-library/Trophy");
 const Maze_1 = require("@mazemasterjs/shared-library/Maze");
@@ -48,14 +55,14 @@ DatabaseManager_1.default.getInstance()
 function deleteDoc(colName, docId, version) {
     return __awaiter(this, void 0, void 0, function* () {
         const method = `deleteDoc(${colName}, ${docId}, ${version})`;
-        log.debug(__filename, method, 'Attempting to delete document.');
+        logDebug(__filename, method, 'Attempting to delete document.');
         let query;
         // special handling is required for bot_code entries
         query = colName === config.MONGO_COL_BOTCODE ? { botId: docId, version } : { id: docId };
         return yield dbMan
             .deleteDocument(colName, query)
             .then(result => {
-            log.debug(__filename, method, `${result.deletedCount} documents(s) deleted from ${colName}.`);
+            logDebug(__filename, method, `${result.deletedCount} documents(s) deleted from ${colName}.`);
             return Promise.resolve(result);
         })
             .catch(err => {
@@ -75,7 +82,7 @@ exports.deleteDoc = deleteDoc;
 function insertDoc(colName, docBody) {
     return __awaiter(this, void 0, void 0, function* () {
         const method = `insertDoc(${colName}, docBody)`;
-        log.debug(__filename, `insertDoc(${colName}, jsonDoc, req)`, 'Inserting document.');
+        logDebug(__filename, `insertDoc(${colName}, jsonDoc, req)`, 'Inserting document.');
         let doc;
         // first attempt to convert the document to an object using new <T>(data)
         try {
@@ -92,7 +99,7 @@ function insertDoc(colName, docBody) {
         return yield dbMan
             .insertDocument(colName, doc)
             .then(result => {
-            log.debug(__filename, method, `${result.insertedCount} document(s) inserted.`);
+            logDebug(__filename, method, `${result.insertedCount} document(s) inserted.`);
             return Promise.resolve(result);
         })
             .catch(err => {
@@ -111,7 +118,7 @@ exports.insertDoc = insertDoc;
 function updateDoc(colName, docBody) {
     return __awaiter(this, void 0, void 0, function* () {
         const method = `updateDoc(${colName}, ${docBody})`;
-        log.debug(__filename, method, 'Updating document.');
+        logDebug(__filename, method, 'Updating document.');
         let query;
         let doc;
         // special handling is required for bot_code entries
@@ -149,7 +156,7 @@ exports.updateDoc = updateDoc;
 function getCount(colName, req) {
     return __awaiter(this, void 0, void 0, function* () {
         const method = `getCount(${colName})`;
-        log.debug(__filename, method, 'Counting documents...');
+        logDebug(__filename, method, 'Counting documents...');
         let query = {};
         // build the json object containing parameters to search for
         if (req !== undefined) {
@@ -158,7 +165,7 @@ function getCount(colName, req) {
         return yield dbMan
             .getDocumentCount(colName, query)
             .then(count => {
-            log.debug(__filename, method, 'Count=' + count);
+            logDebug(__filename, method, 'Count=' + count);
             return Promise.resolve(count);
         })
             .catch(err => {
@@ -179,7 +186,7 @@ exports.getCount = getCount;
 function getDocs(colName, req) {
     return __awaiter(this, void 0, void 0, function* () {
         const method = `getDocs(${colName}, req)`;
-        log.debug(__filename, method, 'Getting requested documents from database.');
+        logDebug(__filename, method, 'Getting requested documents from database.');
         // set some vars for page handling
         const pageSize = 10;
         const docs = new Array();
@@ -194,10 +201,10 @@ function getDocs(colName, req) {
         try {
             // loop through the paged list of docs and build a return array.
             while (!done) {
-                log.debug(__filename, method, `QUERY :: Page ${pageNum}, ${colName}, ${JSON.stringify(query)}`);
+                logDebug(__filename, method, `QUERY :: Page ${pageNum}, ${colName}, ${JSON.stringify(query)}`);
                 const page = yield dbMan.getDocuments(colName, query, sort, projection, pageSize, pageNum);
                 if (page.length > 0) {
-                    log.debug(__filename, method, `Page #${pageNum}: Processing ${page.length} document(s).`);
+                    logDebug(__filename, method, `Page #${pageNum}: Processing ${page.length} document(s).`);
                     // can't easily use Array.concat, so have to loop and push
                     for (const doc of page) {
                         try {
@@ -212,14 +219,14 @@ function getDocs(colName, req) {
                 // if we don't have at least pageSize elements, we've hit the last page
                 if (page.length < pageSize) {
                     done = true;
-                    log.debug(__filename, method, `-> Finished. ${docs.length} documents documents collected from ${pageNum} pages.`);
+                    logDebug(__filename, method, `-> Finished. ${docs.length} documents documents collected from ${pageNum} pages.`);
                 }
                 else {
                     pageNum++;
                 }
             }
             // return the results
-            log.debug(__filename, method, `Returning ${docs.length} documents from the '${colName}' collection.`);
+            logDebug(__filename, method, `Returning ${docs.length} documents from the '${colName}' collection.`);
             return Promise.resolve(docs);
         }
         catch (err) {
@@ -249,26 +256,26 @@ function coerce(colName, jsonDoc, isStub) {
         switch (colName) {
             case config.MONGO_COL_MAZES: {
                 className = Maze_1.Maze.name;
-                log.debug(__filename, method, `Attempting type coercion: JSON -> ${className}`);
+                logTrace(__filename, method, `Attempting type coercion: JSON -> ${className}`);
                 return new Maze_1.Maze(jsonDoc);
             }
             case config.MONGO_COL_SCORES: {
                 className = Score_1.Score.name;
-                log.debug(__filename, method, `Attempting type coercion: JSON -> ${className}`);
+                logTrace(__filename, method, `Attempting type coercion: JSON -> ${className}`);
                 return Score_1.Score.fromJson(jsonDoc);
             }
             case config.MONGO_COL_TROPHIES: {
                 className = Trophy_1.Trophy.name;
-                log.debug(__filename, method, `Attempting type coercion: JSON -> ${className}`);
+                logTrace(__filename, method, `Attempting type coercion: JSON -> ${className}`);
                 return new Trophy_1.Trophy(jsonDoc);
             }
             case config.MONGO_COL_TEAMS: {
                 className = Team_1.Team.name;
-                log.debug(__filename, method, `Attempting type coercion: JSON -> ${className}`);
+                logTrace(__filename, method, `Attempting type coercion: JSON -> ${className}`);
                 return new Team_1.Team(jsonDoc);
             }
             default: {
-                log.debug(__filename, method, `No coercion mapped for ${colName}, returning unaltered JSON.`);
+                logTrace(__filename, method, `No coercion mapped for ${colName}, returning unaltered JSON.`);
                 return jsonDoc;
             }
         }
@@ -288,7 +295,7 @@ function coerce(colName, jsonDoc, isStub) {
 exports.generateDocs = (colName, dataFile) => __awaiter(this, void 0, void 0, function* () {
     const method = `generateDocs(${colName}, ${dataFile})`;
     const counts = { collection: colName, deleted: 0, inserted: 0, errors: 0 };
-    log.debug(__filename, method, `Attempting to regenerate default ${config.Service.Name} documents from ${dataFile}...`);
+    logDebug(__filename, method, `Attempting to regenerate default ${config.Service.Name} documents from ${dataFile}...`);
     // make sure the file exists...
     dataFile = path_1.default.resolve(dataFile);
     if (!fs_1.default.existsSync(dataFile)) {
@@ -320,11 +327,11 @@ exports.generateDocs = (colName, dataFile) => __awaiter(this, void 0, void 0, fu
         yield deleteDoc(colName, typedObj.Id)
             .then(result => {
             if (result.deletedCount && result.deletedCount > 0) {
-                log.debug(__filename, method, `${result.deletedCount} ${config.Service.Name} document(s) with id=${typedObj.Id} deleted`);
+                logDebug(__filename, method, `${result.deletedCount} ${config.Service.Name} document(s) with id=${typedObj.Id} deleted`);
                 counts.deleted++;
             }
             else {
-                log.debug(__filename, method, `${colName} document with id=${typedObj.Id} could not be deleted (may not exist).`);
+                logDebug(__filename, method, `${colName} document with id=${typedObj.Id} could not be deleted (may not exist).`);
             }
         })
             .catch((err) => {
@@ -336,7 +343,7 @@ exports.generateDocs = (colName, dataFile) => __awaiter(this, void 0, void 0, fu
             .then(result => {
             if (result.insertedCount > 0) {
                 counts.inserted++;
-                log.debug(__filename, method, `${config.Service.Name} (id=${typedObj.Id}) inserted.`);
+                logDebug(__filename, method, `${config.Service.Name} (id=${typedObj.Id}) inserted.`);
             }
             else {
                 log.warn(__filename, method, `insertedCount is 0. ${config.Service.Name} (id=${typedObj.Id}) was NOT inserted.`);
@@ -347,7 +354,7 @@ exports.generateDocs = (colName, dataFile) => __awaiter(this, void 0, void 0, fu
             log.error(__filename, method, `Error inserting ${config.Service.Name} (id=${typedObj.Id})`, err);
         });
     }
-    log.debug(__filename, method, 'Results:' + JSON.stringify(counts));
+    logDebug(__filename, method, 'Results:' + JSON.stringify(counts));
     return Promise.resolve(counts);
 });
 /**
@@ -358,17 +365,17 @@ exports.generateDocs = (colName, dataFile) => __awaiter(this, void 0, void 0, fu
  */
 function getProjection(colName, query) {
     const stubKey = 'stub';
-    log.debug(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Getting projection.');
+    logDebug(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Getting projection.');
     if (Object.entries(query).length > 0) {
         if (query[stubKey] === 'true') {
             delete query[stubKey];
             switch (colName) {
                 case config.MONGO_COL_MAZES: {
-                    log.debug(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Stub flag found, returning MAZE_STUB_PROJECTION');
+                    logDebug(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Stub flag found, returning MAZE_STUB_PROJECTION');
                     return config.MAZE_STUB_PROJECTION;
                 }
                 case config.MONGO_COL_TEAMS: {
-                    log.debug(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Stub flag found, returning TEAM_STUB_PROJECTION');
+                    logDebug(__filename, `getProjection(${colName}, ${JSON.stringify(query)})`, 'Stub flag found, returning TEAM_STUB_PROJECTION');
                     return config.TEAM_STUB_PROJECTION;
                 }
             }
@@ -424,6 +431,16 @@ function getSortByColName(colName) {
         default: {
             return {};
         }
+    }
+}
+function logDebug(file, method, message) {
+    if (log.LogLevel >= logger_1.LOG_LEVELS.DEBUG) {
+        log.debug(file, method, message);
+    }
+}
+function logTrace(file, method, message) {
+    if (log.LogLevel >= logger_1.LOG_LEVELS.DEBUG) {
+        log.trace(file, method, message);
     }
 }
 //# sourceMappingURL=funcs.js.map
