@@ -164,7 +164,7 @@ export const deleteDoc = (req: Request, res: Response, forceColName?: string) =>
   log.debug(__filename, req.path, 'Handling request -> ' + req.url);
   const colName = forceColName ? forceColName : svcColName;
   const docId = colName === config.MONGO_COL_BOTCODE ? req.params.botId : req.params.docId;
-  const version = parseInt(req.params.version, 10);
+  const version = req.params.version;
 
   // special handling for bot_code documents
   if (forceColName) {
