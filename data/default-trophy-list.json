@@ -91,10 +91,10 @@
       "bonusAward": -5
     },
     {
-      "id": "STANDING_AROUND",
-      "name": "Standing Around",
+      "id": "STAND_HARDER",
+      "name": "Stand Harder",
       "description": "Why would you try to stand up when your're already standing up? That makes as much sense as sitting down in a maze filled with traps and deadly, flowing lava...",
-      "bonusAward": 5
+      "bonusAward": -5
     },
     {
       "id": "TAKING_A_STAND",
