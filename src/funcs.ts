@@ -6,6 +6,7 @@ import { Score } from '@mazemasterjs/shared-library/Score';
 import { Trophy } from '@mazemasterjs/shared-library/Trophy';
 import { Maze } from '@mazemasterjs/shared-library/Maze';
 import { Team } from '@mazemasterjs/shared-library/Team';
+import { User } from '@mazemasterjs/shared-library/User';
 import Config from './Config';
 import DatabaseManager from '@mazemasterjs/database-manager/DatabaseManager';
 import { DeleteWriteOpResultObject, InsertOneWriteOpResult, UpdateWriteOpResult } from 'mongodb';
@@ -265,6 +266,11 @@ function coerce(colName: string, jsonDoc: any, isStub?: boolean): any {
         className = Team.name;
         logTrace(__filename, method, `Attempting type coercion: JSON -> ${className}`);
         return new Team(jsonDoc);
+      }
+      case config.MONGO_COL_USERS: {
+        className = User.name;
+        logTrace(__filename, method, `Attempting type coercion: JSON -> ${className}`);
+        return new User(jsonDoc);
       }
       default: {
         logTrace(__filename, method, `No coercion mapped for ${colName}, returning unaltered JSON.`);

@@ -39,6 +39,12 @@ if (config.Service.Name === 'team') {
     exports.router.put('/insert/botCode', (req, res) => routes.insertDoc(req, res, config.MONGO_COL_BOTCODE));
     exports.router.put('/update/botCode', (req, res) => routes.updateDoc(req, res, config.MONGO_COL_BOTCODE));
     exports.router.delete('/delete/botCode/:botId/:version', (req, res) => routes.deleteDoc(req, res, config.MONGO_COL_BOTCODE));
+    // user/auth
+    exports.router.get('/count/user', (req, res) => routes.countDocs(req, res, config.MONGO_COL_USERS));
+    exports.router.get('/get/user', (req, res) => routes.getDocs(req, res, config.MONGO_COL_USERS));
+    exports.router.put('/insert/user', (req, res) => routes.insertDoc(req, res, config.MONGO_COL_USERS));
+    exports.router.put('/update/user', (req, res) => routes.updateDoc(req, res, config.MONGO_COL_USERS));
+    exports.router.delete('/delete/user/:botId/:version', (req, res) => routes.deleteDoc(req, res, config.MONGO_COL_USERS));
 }
 // map the live/ready probes
 exports.router.get('/probes/live', routes.livenessProbe);
