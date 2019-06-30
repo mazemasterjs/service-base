@@ -40,7 +40,7 @@ if (config.Service.Name === 'team') {
   router.get('/get/user', (req, res) => routes.getDocs(req, res, config.MONGO_COL_USERS));
   router.put('/insert/user', (req, res) => routes.insertDoc(req, res, config.MONGO_COL_USERS));
   router.put('/update/user', (req, res) => routes.updateDoc(req, res, config.MONGO_COL_USERS));
-  router.delete('/delete/user/:botId/:version', (req, res) => routes.deleteDoc(req, res, config.MONGO_COL_USERS));
+  router.delete('/delete/user/:docId', (req, res) => routes.deleteDoc(req, res, config.MONGO_COL_USERS));
 }
 
 // map the live/ready probes

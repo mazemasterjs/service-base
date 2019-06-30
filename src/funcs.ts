@@ -270,7 +270,7 @@ function coerce(colName: string, jsonDoc: any, isStub?: boolean): any {
       case config.MONGO_COL_USERS: {
         className = User.name;
         logTrace(__filename, method, `Attempting type coercion: JSON -> ${className}`);
-        return new User(jsonDoc);
+        return User.fromJson(jsonDoc);
       }
       default: {
         logTrace(__filename, method, `No coercion mapped for ${colName}, returning unaltered JSON.`);

@@ -25,6 +25,7 @@ const Score_1 = require("@mazemasterjs/shared-library/Score");
 const Trophy_1 = require("@mazemasterjs/shared-library/Trophy");
 const Maze_1 = require("@mazemasterjs/shared-library/Maze");
 const Team_1 = require("@mazemasterjs/shared-library/Team");
+const User_1 = require("@mazemasterjs/shared-library/User");
 const Config_1 = __importDefault(require("./Config"));
 const DatabaseManager_1 = __importDefault(require("@mazemasterjs/database-manager/DatabaseManager"));
 // global object instances
@@ -273,6 +274,11 @@ function coerce(colName, jsonDoc, isStub) {
                 className = Team_1.Team.name;
                 logTrace(__filename, method, `Attempting type coercion: JSON -> ${className}`);
                 return new Team_1.Team(jsonDoc);
+            }
+            case config.MONGO_COL_USERS: {
+                className = User_1.User.name;
+                logTrace(__filename, method, `Attempting type coercion: JSON -> ${className}`);
+                return User_1.User.fromJson(jsonDoc);
             }
             default: {
                 logTrace(__filename, method, `No coercion mapped for ${colName}, returning unaltered JSON.`);
