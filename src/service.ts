@@ -5,12 +5,18 @@ import bodyParser from 'body-parser';
 import { Logger } from '@mazemasterjs/logger';
 import DatabaseManager from '@mazemasterjs/database-manager/DatabaseManager';
 import { Server } from 'http';
+import basicAuth from 'express-basic-auth';
 import cors from 'cors';
 import Config from './Config';
+import { MD5 as hash } from 'object-hash';
 import { hostname } from 'os';
+import { USER_ROLES } from '@mazemasterjs/shared-library/Enums';
+import { Security } from './Security';
+import { IUser } from '@mazemasterjs/shared-library/Interfaces/IUser';
 
-// load config
+// load config & security singletons
 const config = Config.getInstance();
+const security = Security.getInstance();
 
 // get and configure logger
 const log = Logger.getInstance();
@@ -54,6 +60,16 @@ async function launchExpress() {
   // enable http compression middleware
   app.use(compression());
 
+  // set up the basic auth middleware
+
+  app.use(
+    basicAuth({
+      authorizer: authUser,
+      authorizeAsync: true,
+      unauthorizedResponse: authFailed,
+    }),
+  );
+
   // enable bodyParser middleware for json
   app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -93,6 +109,65 @@ async function launchExpress() {
     log.force(__filename, 'launchExpress()', `Express is listening -> http://${hostname}:${config.HTTP_PORT}${config.Service.BaseUrl}`);
     log.force(__filename, 'launchExpress()', `[ ${config.Service.Name.toUpperCase()}-SERVICE ] is now LIVE and READY!'`);
   });
+}
+
+/**
+ * Attempts to authenticate the given user against the users collection
+ *
+ * @param userName
+ * @param password
+ * @param callback
+ */
+async function authUser(userName: string, password: string, callback: any) {
+  const method = `authUser(${userName}, [password-masked])`;
+  log.debug(__filename, method, `Authenticating credentials...`);
+
+  const userCreds: IUser | null = security.getUserCreds(userName);
+  if (userCreds !== null) {
+    log.debug(__filename, method, `User credentials cached. User role is: ${USER_ROLES[userCreds.role]}`);
+    callback(null, true);
+    return;
+  }
+
+  // special case: case-insensitive userName query
+  const userDoc: IUser = await dbMan.getDocument(config.MONGO_COL_USERS, { userName: new RegExp('^' + userName + '$', 'i') });
+
+  if (userDoc) {
+    if (userDoc.pwHash === hash(password)) {
+      log.debug(__filename, method, `Authentication Succeeeded: ${userDoc.userName} has role ${USER_ROLES[userDoc.role]}`);
+
+      // update the user's last login time
+      userDoc.lastLogin = Date.now();
+      dbMan.updateDocument(config.MONGO_COL_USERS, { userName }, userDoc);
+
+      // stash the user record in the the authed user cache
+      security.cacheAuthedUser(userDoc);
+
+      // return success to auth middleware
+      callback(null, true);
+    } else {
+      // return failure to auth middleware
+      log.debug(__filename, method, 'Authentication Failed: Invalid password: ' + userDoc.userName);
+      callback(null, false);
+    }
+  } else {
+    // return failure to auth middleware
+    log.debug(__filename, method, 'Authentication Failed: User not found');
+    callback(null, false);
+  }
+}
+
+/**
+ * Returns a simple auth failure message
+ *
+ * @param req
+ */
+function authFailed(req: any) {
+  if (req.auth) {
+    return `Authentication Failed. Access denied.`;
+  } else {
+    return 'Missing credentials. Basic authorization header is required. Access denied.';
+  }
 }
 
 /**

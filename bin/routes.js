@@ -12,11 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Config_1 = require("./Config");
 const logger_1 = require("@mazemasterjs/logger");
-const sFn = __importStar(require("./funcs"));
+const fns = __importStar(require("./funcs"));
 const Maze_1 = __importDefault(require("@mazemasterjs/shared-library/Maze"));
+const Enums_1 = require("@mazemasterjs/shared-library/Enums");
+const Security_1 = __importDefault(require("./Security"));
 // set constant utility references
 const log = logger_1.Logger.getInstance();
 const config = Config_1.Config.getInstance();
+const security = Security_1.default.getInstance();
 const svcColName = getSvcColName();
 /**
  * Returns the collection name tied to the given service name
@@ -48,6 +51,11 @@ function getSvcColName() {
 }
 exports.generateDocs = (req, res) => {
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    const minRole = Enums_1.USER_ROLES.INSTRUCTOR;
+    if (!security.userHasRole(req.header('Authorization'), minRole)) {
+        log.debug(__filename, req.path, 'User is not authorized.');
+        return res.status(401).send(`Unauthorized Access - You must have at least the ${Enums_1.USER_ROLES[minRole]} role to ride this ride.`);
+    }
     let dataFile;
     switch (svcColName) {
         case config.MONGO_COL_MAZES: {
@@ -65,7 +73,7 @@ exports.generateDocs = (req, res) => {
             .json({ status: '405 - Method Not Supported', message: `Service [ ${config.Service.Name} ] does not support default document generation.` });
     }
     else {
-        sFn
+        fns
             .generateDocs(svcColName, dataFile)
             .then(results => {
             res.status(200).json(results);
@@ -84,8 +92,13 @@ exports.generateDocs = (req, res) => {
  */
 exports.countDocs = (req, res, forceColName) => {
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    const minRole = Enums_1.USER_ROLES.USER;
+    if (!security.userHasRole(req.header('Authorization'), minRole)) {
+        log.debug(__filename, req.path, 'User is not authorized.');
+        return res.status(401).send(`Unauthorized Access - You must have at least the ${Enums_1.USER_ROLES[minRole]} role to ride this ride.`);
+    }
     const colName = forceColName ? forceColName : svcColName;
-    sFn
+    fns
         .getCount(colName, req)
         .then(count => {
         res.status(200).json({ collection: colName, count });
@@ -103,8 +116,13 @@ exports.countDocs = (req, res, forceColName) => {
  */
 exports.getDocs = (req, res, forceColName) => {
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    const minRole = Enums_1.USER_ROLES.ASSISTANT;
+    if (!security.userHasRole(req.header('Authorization'), minRole)) {
+        log.debug(__filename, req.path, 'User is not authorized.');
+        return res.status(401).send(`Unauthorized Access - You must have at least the ${Enums_1.USER_ROLES[minRole]} role to ride this ride.`);
+    }
     const colName = forceColName ? forceColName : svcColName;
-    sFn
+    fns
         .getDocs(colName, req)
         .then(docs => {
         if (docs.length === 0) {
@@ -126,9 +144,14 @@ exports.getDocs = (req, res, forceColName) => {
  * @param forceColName string - optional - force action against a specific collection
  */
 exports.insertDoc = (req, res, forceColName) => {
+    const minRole = Enums_1.USER_ROLES.ASSISTANT;
+    if (!security.userHasRole(req.header('Authorization'), minRole)) {
+        log.debug(__filename, req.path, 'User is not authorized.');
+        return res.status(401).send(`Unauthorized Access - You must have at least the ${Enums_1.USER_ROLES[minRole]} role to ride this ride.`);
+    }
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);
     const colName = forceColName ? forceColName : svcColName;
-    sFn
+    fns
         .insertDoc(colName, req.body)
         .then(result => {
         res.status(200).json(result);
@@ -145,9 +168,14 @@ exports.insertDoc = (req, res, forceColName) => {
  * @param forceColName string - optional - force action against a specific collection
  */
 exports.updateDoc = (req, res, forceColName) => {
+    const minRole = Enums_1.USER_ROLES.USER;
+    if (!security.userHasRole(req.header('Authorization'), minRole)) {
+        log.debug(__filename, req.path, 'User is not authorized.');
+        return res.status(401).send(`Unauthorized Access - You must have at least the ${Enums_1.USER_ROLES[minRole]} role to ride this ride.`);
+    }
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);
     const colName = forceColName ? forceColName : svcColName;
-    sFn
+    fns
         .updateDoc(colName, req.body)
         .then(result => {
         res.status(200).json(result);
@@ -165,12 +193,17 @@ exports.updateDoc = (req, res, forceColName) => {
  */
 exports.deleteDoc = (req, res, forceColName) => {
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    const minRole = Enums_1.USER_ROLES.ASSISTANT;
+    if (!security.userHasRole(req.header('Authorization'), minRole)) {
+        log.debug(__filename, req.path, 'User is not authorized.');
+        return res.status(401).send(`Unauthorized Access - You must have at least the ${Enums_1.USER_ROLES[minRole]} role to ride this ride.`);
+    }
     const colName = forceColName ? forceColName : svcColName;
     const docId = colName === config.MONGO_COL_BOTCODE ? req.params.botId : req.params.docId;
     const version = req.params.version;
     // special handling for bot_code documents
     if (forceColName) {
-        sFn
+        fns
             .deleteDoc(colName, docId, version)
             .then(result => {
             res.status(200).json(result);
@@ -181,7 +214,7 @@ exports.deleteDoc = (req, res, forceColName) => {
     }
     else {
         // standard documents aren't versioned
-        sFn
+        fns
             .deleteDoc(colName, docId)
             .then(result => {
             res.status(200).json(result);
@@ -199,6 +232,11 @@ exports.deleteDoc = (req, res, forceColName) => {
  */
 exports.getServiceDoc = (req, res) => {
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    const minRole = Enums_1.USER_ROLES.USER;
+    if (!security.userHasRole(req.header('Authorization'), minRole)) {
+        log.debug(__filename, req.path, 'User is not authorized.');
+        return res.status(401).send(`Unauthorized Access - You must have at least the ${Enums_1.USER_ROLES[minRole]} role to ride this ride.`);
+    }
     res.status(200).json(config.Service);
 };
 /**
@@ -209,6 +247,11 @@ exports.getServiceDoc = (req, res) => {
  */
 exports.generateMaze = (req, res) => {
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+    const minRole = Enums_1.USER_ROLES.USER;
+    if (!security.userHasRole(req.header('Authorization'), minRole)) {
+        log.debug(__filename, req.path, 'User is not authorized.');
+        return res.status(401).send(`Unauthorized Access - You must have at least the ${Enums_1.USER_ROLES[minRole]} role to ride this ride.`);
+    }
     const height = parseInt(req.params.height, 10);
     const width = parseInt(req.params.width, 10);
     const challenge = parseInt(req.params.challenge, 10);
@@ -253,7 +296,7 @@ exports.unhandledRoute = (req, res) => {
     log.warn(__filename, `Route -> ${req.method} -> ${req.url}`, 'Unhandled route, returning 404.');
     res.status(404).json({
         status: '404',
-        message: `${req.method} route not found, are you sure you're using the right HTTP Method? See ${config.Service.BaseUrl}/service for detailed documentation.`,
+        message: `${req.method} route not found, check your HTTP Method? See ${config.Service.BaseUrl}service for detailed documentation.`,
     });
 };
 //# sourceMappingURL=routes.js.map

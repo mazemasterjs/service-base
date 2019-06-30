@@ -1,44 +1,41 @@
-@userName = Test-User-1
 
+### Request probes with invalid USER
+GET http://localhost:8083/api/team/probes/live HTTP/1.1
+Authorization: Basic {{invalidKey}}
+
+### Rquest list of users
 GET http://localhost:8083/api/team/get/user HTTP/1.1
+Authorization: Basic {{adminKey}}
 
-###
+### Request count of teams
+GET http://localhost:8083/api/team/count HTTP/1.1
+Authorization: Basic {{assistantKey}}
+
+### Request list of teams
+GET http://localhost:8083/api/team/get HTTP/1.1
+Authorization: Basic {{adminKey}}
+
+### Request specific user
 GET http://localhost:8083/api/team/get/user?userName={{userName}} HTTP/1.1
+Authorization: Basic {{adminKey}}
 
-###
-
+### Insert new user
 PUT http://localhost:8083/api/team/insert/user HTTP/1.1
+Authorization: Basic {{adminKey}}
 Content-Type: application/json
 
 {
-  "botId": "Bot-1",
-  "firstName": "Test",
-  "id": "f75740cf577ffff8f943b54bf0a7c850",
+  "botId": "5ca24489-6b10-4db0-a62d-b85159fab44c",
+  "firstName": "James",
+  "id": "fb94a63fcbda7e5b80573d82ea9a554b",
   "lastLogin": 0,
-  "lastName": "User",
-  "pwHash": "a4b9e35e64240d3c079c997741f0ba95",
-  "role": 0,
-  "teamId": "Team-1",
-  "userName": "Test-User-1"
+  "lastName": "Dean",
+  "pwHash": "12a6896d0ef35c47d693788319ff5693",
+  "role": 4,
+  "teamId": "d72889fc-2db0-4d82-a39f-b1422b2f75f4",
+  "userName": "Kreebog"
 }
 
 ###
-
-PUT http://localhost:8083/api/team/update/user HTTP/1.1
-Content-Type: application/json
-
-{
-  "botId": "Bot-1",
-  "firstName": "Test",
-  "id": "f75740cf577ffff8f943b54bf0a7c850",
-  "lastLogin": 0,
-  "lastName": "User",
-  "pwHash": "forced-pw-hash-update",
-  "role": 0,
-  "teamId": "Team-1",
-  "userName": "Test-User-1"
-}
-
-###
-
 DELETE http://localhost:8083/api/team/delete/user/f75740cf577ffff8f943b54bf0a7c850 HTTP/1.1
+Authorization: Basic {{adminKey}}
