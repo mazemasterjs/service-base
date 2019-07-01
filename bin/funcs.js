@@ -407,7 +407,12 @@ function buildQueryJson(reqQuery) {
         if (reqQuery.hasOwnProperty(key)) {
             // check for and preserve numeric parameters
             if (isNaN(reqQuery[key])) {
-                query[key] = reqQuery[key];
+                if (key === 'userName') {
+                    query[key] = new RegExp('^' + reqQuery[key] + '$', 'i');
+                }
+                else {
+                    query[key] = reqQuery[key];
+                }
             }
             else {
                 query[key] = parseInt(reqQuery[key], 10);
