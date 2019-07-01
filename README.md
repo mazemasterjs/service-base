@@ -25,7 +25,7 @@ the designated \*-service.json file into memory and use it's settings to configu
 - put: '/update' - Validates and updates a document in the service collection with the JSON document body.
 - delete: '/delete/:docId' - Delete a single document with a matching docId from the service collection.
 
-## Team: Special Endpoints
+## Team: BotCode Endpoints
 
 - get: '/count/botCode' - Returns the total count of bot code documents in the bot_code collection
 - get: '/count/botCode?botId=STRING' - Returns the total count of bot code documents with the matching botId
@@ -34,6 +34,16 @@ the designated \*-service.json file into memory and use it's settings to configu
 - put: '/insert/botCode' - Inserts a new, versioned bot code document.
 - put: '/update/botCode' - Updates an existing version of a bot code document.
 - delete: '/delete/botCode/:botId/:version' - Deletes a single bot code document with matching botId and version.
+
+## Team: User Endpoints
+
+- get: '/count/user' - Returns the total count of user documents in the users collection
+- get: '/count/user?userId=STRING' - Returns the total count of user documents with the matching userId
+- get: '/get/user?userId=STRING' - Returns all user documents from the bot_code collection that match the given userId (e.g. /get?userId=234ABC)
+- get: '/get/user?userId=STRING' - Returns the user document for the given userId (e.g. /get?userId=234ABC)
+- put: '/insert/user' - Inserts a new user document.
+- put: '/update/user' - Updates an existing user document.
+- delete: '/delete/user/:userId' - Deletes a single user document with matching userId
 
 ## Maze: Special Endpoints
 
@@ -45,6 +55,18 @@ the designated \*-service.json file into memory and use it's settings to configu
 - get: '/regenerate-default-docs' - Delete, generate, and insert default documents from default-SERVICE-list.json. Applies only to the maze and trophy services.
 
 ## Change Log
+
+### v1.2.0
+
+- Added Security class to handle server-side credential caching and basic RBAC
+- Installed basic-auth middleware - all non-authenticated requests will not fail with error 401 (not authorized)
+- All routes, except for live/ready probes, now require a user be authenticated with a proper role assinged. USER_ROLES: NONE, USER, ASSISTANT, INSTRUCTOR, ADMIN
+  - (most service endpoints require ASSISTANT or better)
+- Added series of /user endpoints to the TEAM service (again, because we're low on OpenShift capacity)
+- Two new env vars are required to start a local service:
+  - AUTH_CACHE_LIFESPAN=604800000 // This tells the service how long to allow credentials to live (currently 7 days)
+  - AUTH_CACHE_CHECK_INTERVAL=28800000 // The frequency at which the service will check for and invalidate expired credentials (currently 8 hours)
+- If an account recieves a role change, the server will probably have to be restarted before the changes will show up. To-do in place for that...
 
 ### v1.1.0
 

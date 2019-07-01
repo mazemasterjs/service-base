@@ -34,6 +34,13 @@ if (config.Service.Name === 'team') {
   router.put('/insert/botCode', (req, res) => routes.insertDoc(req, res, config.MONGO_COL_BOTCODE));
   router.put('/update/botCode', (req, res) => routes.updateDoc(req, res, config.MONGO_COL_BOTCODE));
   router.delete('/delete/botCode/:botId/:version', (req, res) => routes.deleteDoc(req, res, config.MONGO_COL_BOTCODE));
+
+  // user/auth
+  router.get('/count/user', (req, res) => routes.countDocs(req, res, config.MONGO_COL_USERS));
+  router.get('/get/user', (req, res) => routes.getDocs(req, res, config.MONGO_COL_USERS));
+  router.put('/insert/user', (req, res) => routes.insertDoc(req, res, config.MONGO_COL_USERS));
+  router.put('/update/user', (req, res) => routes.updateDoc(req, res, config.MONGO_COL_USERS));
+  router.delete('/delete/user/:docId', (req, res) => routes.deleteDoc(req, res, config.MONGO_COL_USERS));
 }
 
 // map the live/ready probes

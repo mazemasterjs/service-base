@@ -24,9 +24,12 @@ export class Config {
   public HTTP_PORT: number;
   public readonly SERVICE_DOC_FILE: string;
   public readonly LOG_LEVEL: number;
+  public readonly AUTH_CACHE_CHECK_INTERVAL: number;
+  public readonly AUTH_CACHE_LIFESPAN: number;
   public readonly MONGO_COL_MAZES: string;
   public readonly MONGO_COL_TEAMS: string;
   public readonly MONGO_COL_BOTCODE: string;
+  public readonly MONGO_COL_USERS: string;
   public readonly MONGO_COL_SCORES: string;
   public readonly MONGO_COL_TROPHIES: string;
   public readonly MONGO_CONNSTR: string;
@@ -52,10 +55,13 @@ export class Config {
     this.LOG_LEVEL = this.getVar('LOG_LEVEL', 'number');
     this.SERVICE_DOC_FILE = this.getVar('SERVICE_DOC_FILE', 'string');
     this.HTTP_PORT = this.getVar('HTTP_PORT', 'number');
+    this.AUTH_CACHE_CHECK_INTERVAL = this.getVar('AUTH_CACHE_CHECK_INTERVAL', 'number');
+    this.AUTH_CACHE_LIFESPAN = this.getVar('AUTH_CACHE_LIFESPAN', 'number');
     this.MONGO_COL_MAZES = this.getVar('MONGO_COL_MAZES', 'string');
     this.MONGO_COL_SCORES = this.getVar('MONGO_COL_SCORES', 'string');
     this.MONGO_COL_TEAMS = this.getVar('MONGO_COL_TEAMS', 'string');
     this.MONGO_COL_BOTCODE = this.getVar('MONGO_COL_BOTCODE', 'string');
+    this.MONGO_COL_USERS = this.getVar('MONGO_COL_USERS', 'string');
     this.MONGO_COL_TROPHIES = this.getVar('MONGO_COL_TROPHIES', 'string');
     this.MONGO_CONNSTR = this.getVar('MONGO_CONNSTR', 'string');
     this.MONGO_DB = this.getVar('MONGO_DB', 'string');
