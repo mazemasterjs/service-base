@@ -1,3 +1,8 @@
+@userName = OpenShift
+//@userName = Kreebog
+@adminKey = a3JlZWJvZzoxc3VwZXIx 
+@assistantKey = RFJvZ2VyczpEUm9nZXJz
+@invalidKey = dGVzdDpndXk=
 
 ### Request probes with invalid USER
 GET http://localhost:8083/api/team/probes/live HTTP/1.1
@@ -18,6 +23,24 @@ Authorization: Basic {{adminKey}}
 ### Request specific user
 GET http://localhost:8083/api/team/get/user?userName={{userName}} HTTP/1.1
 Authorization: Basic {{adminKey}}
+
+### Update User
+PUT http://localhost:8083/api/team/update/user HTTP/1.1
+Authorization: Basic {{adminKey}}
+Content-Type: application/json
+
+ {
+    "id": "OpenShift",
+    "userName": "OpenShift",
+    "firstName": "Open",
+    "lastName": "Shift",
+    "teamId": "N/A",
+    "botId": "N/A",
+    "role": 4,
+    "pwHash": "7549138726b3ddf03ce2169e54d5790e",
+    "lastLogin": 0
+  }
+
 
 ### Insert new user
 PUT http://localhost:8083/api/team/insert/user HTTP/1.1

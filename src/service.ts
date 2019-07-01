@@ -164,8 +164,10 @@ async function authUser(userName: string, password: string, callback: any) {
  */
 function authFailed(req: any) {
   if (req.auth) {
+    log.debug(__filename, 'authFailed()', 'Auth Failed - Access Denied.');
     return `Authentication Failed. Access denied.`;
   } else {
+    log.debug(__filename, 'authFailed()', 'Auth Failed - Missing Credentials.');
     return 'Missing credentials. Basic authorization header is required. Access denied.';
   }
 }

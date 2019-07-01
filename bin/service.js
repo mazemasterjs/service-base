@@ -157,9 +157,11 @@ function authUser(userName, password, callback) {
  */
 function authFailed(req) {
     if (req.auth) {
+        log.debug(__filename, 'authFailed()', 'Auth Failed - Access Denied.');
         return `Authentication Failed. Access denied.`;
     }
     else {
+        log.debug(__filename, 'authFailed()', 'Auth Failed - Missing Credentials.');
         return 'Missing credentials. Basic authorization header is required. Access denied.';
     }
 }
