@@ -5,12 +5,14 @@
 @invalidKey = dGVzdDpndXk=
 @ocpKey = b3BlbnNoaWZ0Ok9wZW5TaGlmdF9QYXNzd29yZA==
 
-### Request probes with invalid USER
-GET http://localhost:8083/api/team/probes/live HTTP/1.1
+### Request Probes
+GET http://mazemasterjs.com/api/team/probes/live HTTP/1.1
 Authorization: Basic {{ocpKey}}
+Content-Type: application/json
+
 
 ### Rquest list of users
-GET http://localhost:8083/api/team/get/user HTTP/1.1
+GET http://mazemasterjs.com/api/team/get/user HTTP/1.1
 Authorization: Basic {{ocpKey}}
 
 ### Request count of teams
@@ -63,3 +65,347 @@ Content-Type: application/json
 ###
 DELETE http://localhost:8083/api/team/delete/user/f75740cf577ffff8f943b54bf0a7c850 HTTP/1.1
 Authorization: Basic {{adminKey}}
+
+### Get mazes
+GET http://mazemasterjs.com/api/maze/get?id=5:5:10:DEBUG_v1.0.0 HTTP/1.1
+Authorization: Basic {{ocpKey}}
+
+
+### update maze
+PUT http://localhost:8081/api/maze/update HTTP/1.1
+Authorization: Basic {{ocpKey}}
+Content-Type: application/json
+
+{
+    "id": "5:5:10:DEBUG_v1.0.0",
+    "height": 5,
+    "width": 5,
+    "challenge": 10,
+    "name": "zzz_DEBUG",
+    "seed": "none",
+    "cells": [
+      [
+        {
+          "pos": {
+            "row": 0,
+            "col": 0
+          },
+          "exits": 6,
+          "tags": 12,
+          "traps": 0,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 0,
+            "col": 1
+          },
+          "exits": 10,
+          "tags": 12,
+          "traps": 0,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 0,
+            "col": 2
+          },
+          "exits": 6,
+          "tags": 12,
+          "traps": 0,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 0,
+            "col": 3
+          },
+          "exits": 10,
+          "tags": 12,
+          "traps": 0,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 0,
+            "col": 4
+          },
+          "exits": 3,
+          "tags": 13,
+          "traps": 0,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        }
+      ],
+      [
+        {
+          "pos": {
+            "row": 1,
+            "col": 0
+          },
+          "exits": 3,
+          "tags": 12,
+          "traps": 256,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 1,
+            "col": 1
+          },
+          "exits": 3,
+          "tags": 128,
+          "traps": 1,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 1,
+            "col": 2
+          },
+          "exits": 3,
+          "tags": 16,
+          "traps": 1,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 1,
+            "col": 3
+          },
+          "exits": 3,
+          "tags": 12,
+          "traps": 4,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 1,
+            "col": 4
+          },
+          "exits": 3,
+          "tags": 12,
+          "traps": 1,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        }
+      ],
+      [
+        {
+          "pos": {
+            "row": 2,
+            "col": 0
+          },
+          "exits": 3,
+          "tags": 12,
+          "traps": 0,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 2,
+            "col": 1
+          },
+          "exits": 3,
+          "tags": 12,
+          "traps": 0,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 2,
+            "col": 2
+          },
+          "exits": 3,
+          "tags": 12,
+          "traps": 0,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 2,
+            "col": 3
+          },
+          "exits": 3,
+          "tags": 12,
+          "traps": 0,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 2,
+            "col": 4
+          },
+          "exits": 3,
+          "tags": 12,
+          "traps": 0,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        }
+      ],
+      [
+        {
+          "pos": {
+            "row": 3,
+            "col": 0
+          },
+          "exits": 3,
+          "tags": 12,
+          "traps": 0,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 3,
+            "col": 1
+          },
+          "exits": 3,
+          "tags": 12,
+          "traps": 0,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 3,
+            "col": 2
+          },
+          "exits": 3,
+          "tags": 12,
+          "traps": 64,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 3,
+            "col": 3
+          },
+          "exits": 3,
+          "tags": 12,
+          "traps": 4,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 3,
+            "col": 4
+          },
+          "exits": 3,
+          "tags": 12,
+          "traps": 2,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        }
+      ],
+      [
+        {
+          "pos": {
+            "row": 4,
+            "col": 0
+          },
+          "exits": 3,
+          "tags": 14,
+          "traps": 0,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 4,
+            "col": 1
+          },
+          "exits": 5,
+          "tags": 12,
+          "traps": 0,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 4,
+            "col": 2
+          },
+          "exits": 9,
+          "tags": 12,
+          "traps": 0,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 4,
+            "col": 3
+          },
+          "exits": 5,
+          "tags": 12,
+          "traps": 0,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        },
+        {
+          "pos": {
+            "row": 4,
+            "col": 4
+          },
+          "exits": 9,
+          "tags": 12,
+          "traps": 0,
+          "visits": 0,
+          "lastVisit": 0,
+          "notes": []
+        }
+      ]
+    ],
+    "textRender": "+ S +---+---+---+---+\n| . | . | . | . | . |\n+---+---+---+---+   +\n| . | . | . | . | . |\n+   +   +   +   +   +\n| . | . | . | . | . |\n+   +   +   +   +   +\n| . | . | . | . | . |\n+   +   +   +   +   +\n| . | . | . | . | . |\n+ F +---+---+---+---+\n",
+    "startCell": {
+      "row": 0,
+      "col": 4
+    },
+    "finishCell": {
+      "row": 4,
+      "col": 0
+    },
+    "shortestPathLength": 25,
+    "trapCount": 10,
+    "note": "",
+    "lastUpdated": 1561305458097
+  }
