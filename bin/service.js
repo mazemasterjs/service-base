@@ -120,9 +120,16 @@ function authUser(userName, password, callback) {
         log.debug(__filename, method, `Authenticating credentials...`);
         const userCreds = security.getUserCreds(userName);
         if (userCreds !== null) {
-            log.debug(__filename, method, `User credentials cached. User role is: ${Enums_1.USER_ROLES[userCreds.role]}`);
-            callback(null, true);
-            return;
+            if (userCreds.pwHash !== object_hash_1.MD5(password)) {
+                log.debug(__filename, method, 'Authentication Failed: Invalid password: ' + userCreds.userName);
+                callback(null, false);
+                return;
+            }
+            else {
+                log.debug(__filename, method, `User credentials cached. User role is: ${Enums_1.USER_ROLES[userCreds.role]}`);
+                callback(null, true);
+                return;
+            }
         }
         // special case: case-insensitive userName query
         const userDoc = yield dbMan.getDocument(config.MONGO_COL_USERS, { userName: new RegExp('^' + userName + '$', 'i') });

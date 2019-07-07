@@ -56,7 +56,11 @@ the designated \*-service.json file into memory and use it's settings to configu
 
 ## Change Log
 
-### v1.2.0
+### v1.2.2
+
+- Fixed issue in userAuth - cached user credentials now validated on every request
+
+### v1.2.1
 
 - Added Security class to handle server-side credential caching and basic RBAC
 - Installed basic-auth middleware - all non-authenticated requests will not fail with error 401 (not authorized)
