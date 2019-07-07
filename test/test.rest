@@ -10,7 +10,6 @@ GET http://mazemasterjs.com/api/team/probes/live HTTP/1.1
 Authorization: Basic {{ocpKey}}
 Content-Type: application/json
 
-
 ### Rquest list of users
 GET http://mazemasterjs.com/api/team/get/user HTTP/1.1
 Authorization: Basic {{ocpKey}}
@@ -20,7 +19,7 @@ GET http://localhost:8083/api/team/count HTTP/1.1
 Authorization: Basic {{assistantKey}}
 
 ### Request list of teams
-GET http://localhost:8083/api/team/get HTTP/1.1
+GET http://mazemasterjs.com/api/team/get HTTP/1.1
 Authorization: Basic {{adminKey}}
 
 ### Request specific user
