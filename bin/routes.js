@@ -116,7 +116,7 @@ exports.countDocs = (req, res, forceColName) => {
  */
 exports.getDocs = (req, res, forceColName) => {
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);
-    const minRole = Enums_1.USER_ROLES.ASSISTANT;
+    const minRole = Enums_1.USER_ROLES.USER;
     if (!security.userHasRole(req.header('Authorization'), minRole)) {
         log.debug(__filename, req.path, 'User is not authorized.');
         return res.status(401).send(`Unauthorized Access - You must have at least the ${Enums_1.USER_ROLES[minRole]} role to ride this ride.`);
@@ -168,7 +168,7 @@ exports.insertDoc = (req, res, forceColName) => {
  * @param forceColName string - optional - force action against a specific collection
  */
 exports.updateDoc = (req, res, forceColName) => {
-    const minRole = Enums_1.USER_ROLES.USER;
+    const minRole = Enums_1.USER_ROLES.ASSISTANT;
     if (!security.userHasRole(req.header('Authorization'), minRole)) {
         log.debug(__filename, req.path, 'User is not authorized.');
         return res.status(401).send(`Unauthorized Access - You must have at least the ${Enums_1.USER_ROLES[minRole]} role to ride this ride.`);
@@ -247,7 +247,7 @@ exports.getServiceDoc = (req, res) => {
  */
 exports.generateMaze = (req, res) => {
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);
-    const minRole = Enums_1.USER_ROLES.USER;
+    const minRole = Enums_1.USER_ROLES.ASSISTANT;
     if (!security.userHasRole(req.header('Authorization'), minRole)) {
         log.debug(__filename, req.path, 'User is not authorized.');
         return res.status(401).send(`Unauthorized Access - You must have at least the ${Enums_1.USER_ROLES[minRole]} role to ride this ride.`);
