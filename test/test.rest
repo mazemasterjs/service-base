@@ -9,7 +9,7 @@ Authorization: Basic {{ocpKey}}
 Content-Type: application/json
 
 ### Rquest list of users
-GET http://mazemasterjs.com/api/team/get/user HTTP/1.1
+GET http://mazemasterjs.com/api/team/get/botCode?botId=A_BOT HTTP/1.1
 Authorization: Basic {{ocpKey}}
 
 ### Request count of teams

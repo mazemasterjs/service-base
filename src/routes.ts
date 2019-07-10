@@ -86,13 +86,13 @@ export const generateDocs = (req: Request, res: Response) => {
  */
 export const countDocs = (req: Request, res: Response, forceColName?: string) => {
   log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+  const colName = forceColName ? forceColName : svcColName;
   const minRole = USER_ROLES.USER;
   if (!security.userHasRole(req.header('Authorization'), minRole)) {
     log.debug(__filename, req.path, 'User is not authorized.');
     return res.status(401).send(`Unauthorized Access - You must have at least the ${USER_ROLES[minRole]} role to ride this ride.`);
   }
 
-  const colName = forceColName ? forceColName : svcColName;
   fns
     .getCount(colName, req)
     .then(count => {
@@ -112,13 +112,13 @@ export const countDocs = (req: Request, res: Response, forceColName?: string) =>
  */
 export const getDocs = (req: Request, res: Response, forceColName?: string) => {
   log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+  const colName = forceColName ? forceColName : svcColName;
   const minRole = USER_ROLES.USER;
   if (!security.userHasRole(req.header('Authorization'), minRole)) {
     log.debug(__filename, req.path, 'User is not authorized.');
     return res.status(401).send(`Unauthorized Access - You must have at least the ${USER_ROLES[minRole]} role to ride this ride.`);
   }
 
-  const colName = forceColName ? forceColName : svcColName;
   fns
     .getDocs(colName, req)
     .then(docs => {
@@ -141,13 +141,20 @@ export const getDocs = (req: Request, res: Response, forceColName?: string) => {
  * @param forceColName string - optional - force action against a specific collection
  */
 export const insertDoc = (req: Request, res: Response, forceColName?: string) => {
-  const minRole = USER_ROLES.ASSISTANT;
+  log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+  const colName = forceColName ? forceColName : svcColName;
+
+  // users need to be able to maintain botcode
+  let minRole = USER_ROLES.ASSISTANT;
+  if (colName === config.MONGO_COL_BOTCODE) {
+    minRole = USER_ROLES.USER;
+  }
+
   if (!security.userHasRole(req.header('Authorization'), minRole)) {
     log.debug(__filename, req.path, 'User is not authorized.');
     return res.status(401).send(`Unauthorized Access - You must have at least the ${USER_ROLES[minRole]} role to ride this ride.`);
   }
-  log.debug(__filename, req.path, 'Handling request -> ' + req.url);
-  const colName = forceColName ? forceColName : svcColName;
+
   fns
     .insertDoc(colName, req.body)
     .then(result => {
@@ -166,14 +173,20 @@ export const insertDoc = (req: Request, res: Response, forceColName?: string) =>
  * @param forceColName string - optional - force action against a specific collection
  */
 export const updateDoc = (req: Request, res: Response, forceColName?: string) => {
-  const minRole = USER_ROLES.ASSISTANT;
+  log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+  const colName = forceColName ? forceColName : svcColName;
+
+  // users need to be able to maintain botcode
+  let minRole = USER_ROLES.ASSISTANT;
+  if (colName === config.MONGO_COL_BOTCODE) {
+    minRole = USER_ROLES.USER;
+  }
+
   if (!security.userHasRole(req.header('Authorization'), minRole)) {
     log.debug(__filename, req.path, 'User is not authorized.');
     return res.status(401).send(`Unauthorized Access - You must have at least the ${USER_ROLES[minRole]} role to ride this ride.`);
   }
 
-  log.debug(__filename, req.path, 'Handling request -> ' + req.url);
-  const colName = forceColName ? forceColName : svcColName;
   fns
     .updateDoc(colName, req.body)
     .then(result => {
@@ -193,16 +206,20 @@ export const updateDoc = (req: Request, res: Response, forceColName?: string) =>
  */
 export const deleteDoc = (req: Request, res: Response, forceColName?: string) => {
   log.debug(__filename, req.path, 'Handling request -> ' + req.url);
+  const colName = forceColName ? forceColName : svcColName;
+  const docId = colName === config.MONGO_COL_BOTCODE ? req.params.botId : req.params.docId;
+  const version = req.params.version;
 
-  const minRole = USER_ROLES.ASSISTANT;
+  // users need to be able to maintain botcode
+  let minRole = USER_ROLES.ASSISTANT;
+  if (colName === config.MONGO_COL_BOTCODE) {
+    minRole = USER_ROLES.USER;
+  }
+
   if (!security.userHasRole(req.header('Authorization'), minRole)) {
     log.debug(__filename, req.path, 'User is not authorized.');
     return res.status(401).send(`Unauthorized Access - You must have at least the ${USER_ROLES[minRole]} role to ride this ride.`);
   }
-
-  const colName = forceColName ? forceColName : svcColName;
-  const docId = colName === config.MONGO_COL_BOTCODE ? req.params.botId : req.params.docId;
-  const version = req.params.version;
 
   // special handling for bot_code documents
   if (forceColName) {
