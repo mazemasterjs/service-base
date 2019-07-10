@@ -194,15 +194,20 @@ export const updateDoc = (req: Request, res: Response, forceColName?: string) =>
 export const deleteDoc = (req: Request, res: Response, forceColName?: string) => {
   log.debug(__filename, req.path, 'Handling request -> ' + req.url);
 
-  const minRole = USER_ROLES.ASSISTANT;
+  const colName = forceColName ? forceColName : svcColName;
+  const docId = colName === config.MONGO_COL_BOTCODE ? req.params.botId : req.params.docId;
+  const version = req.params.version;
+  let minRole = USER_ROLES.ASSISTANT;
+
+  // users need to be able to maintain botcode
+  if (colName === config.MONGO_COL_BOTCODE) {
+    minRole = USER_ROLES.USER;
+  }
+
   if (!security.userHasRole(req.header('Authorization'), minRole)) {
     log.debug(__filename, req.path, 'User is not authorized.');
     return res.status(401).send(`Unauthorized Access - You must have at least the ${USER_ROLES[minRole]} role to ride this ride.`);
   }
-
-  const colName = forceColName ? forceColName : svcColName;
-  const docId = colName === config.MONGO_COL_BOTCODE ? req.params.botId : req.params.docId;
-  const version = req.params.version;
 
   // special handling for bot_code documents
   if (forceColName) {
