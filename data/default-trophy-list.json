@@ -1,6 +1,5 @@
 {
-  "elements": [
-    {
+  "elements": [{
       "id": "CHEDDAR_DINNER",
       "name": "Winner, Winner, Cheddar Dinner",
       "description": "You escaped the maze!",
@@ -161,6 +160,54 @@
       "name": "You Fought the Wall",
       "description": "You fought the wall and the wall won.",
       "bonusAward": -50
+    },
+    {
+      "id": "KITTY_HAS_CLAWS",
+      "name": "Kitty Has Claws",
+      "description": "You got caught by the cat",
+      "bonusAward": -100
+    },
+    {
+      "id": "ONE_HUNDRED_SNEAK",
+      "name": "One Hundred Sneak",
+      "description": "You sneaked past the cat",
+      "bonusAward": 10
+    },
+    {
+      "id": "THE_WAITING_GAME",
+      "name": "The Waiting Game",
+      "description": "You hid and waited for the cat to move past you",
+      "bonusAward": 10
+    },
+    {
+      "id": "THE_INEVITABLE",
+      "name": "The Inevitable",
+      "description": "You died from poison",
+      "bonusAward": -20
+    },
+    {
+      "id": "WHERE_AM_I",
+      "name": "Where Am I?",
+      "description": "You walked into a teleporter trap",
+      "bonusAward": 0
+    },
+    {
+      "id": "STOP_RIGHT_THERE",
+      "name": "Stop Right There",
+      "description": "You walked into a wall right after triggering the deadfall trap",
+      "bonusAward": -10
+    },
+    {
+      "id": "THE_PITS",
+      "name": "The Pits",
+      "description": "You walked into a tar pit",
+      "bonusAward": -5
+    },
+    {
+      "id": "TOO_GOOD_TO_BE_TRUE",
+      "name": "Too Good To Be True",
+      "description": "You fell for a trap with cheese",
+      "bonusAward": -30
     }
   ]
 }
