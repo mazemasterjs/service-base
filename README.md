@@ -56,6 +56,10 @@ the designated \*-service.json file into memory and use it's settings to configu
 
 ## Change Log
 
+### v1.2.3
+
+- added some more trophies to the default trophy list
+
 ### v1.2.2
 
 - Fixed issue in userAuth - cached user credentials now validated on every request

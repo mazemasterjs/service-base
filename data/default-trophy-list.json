@@ -161,6 +161,54 @@
       "name": "You Fought the Wall",
       "description": "You fought the wall and the wall won.",
       "bonusAward": -50
+    },
+    {
+      "id": "KITTY_HAS_CLAWS",
+      "name": "Kitty Has Claws",
+      "description": "That age-old game of cat-and-mouse is only fun if you're the winner, but this time, you lost. Hopefully you'll enjoy life as a hairball.",
+      "bonusAward": -100
+    },
+    {
+      "id": "ONE_HUNDRED_SNEAK",
+      "name": "One Hundred Sneak",
+      "description": "With your tail and whiskers all tucked and your little heart raising, you managed to tip-toe past the cat. What are you, some kind of ninja-mouse?",
+      "bonusAward": 10
+    },
+    {
+      "id": "THE_WAITING_GAME",
+      "name": "The Waiting Game",
+      "description": "You cowered in the shadows as that big, ugly cat stalked past. Smart move.",
+      "bonusAward": 10
+    },
+    {
+      "id": "THE_INEVITABLE",
+      "name": "The Inevitable",
+      "description": "The slow-working poison coursing through your little, rodent veins finished you off before you could reach the exit.",
+      "bonusAward": -20
+    },
+    {
+      "id": "WHERE_AM_I",
+      "name": "Where Am I?",
+      "description": "zzzzzZZZZZAAAAP!!! You walked right into a teleport trap. Did you remember to say 'Beam me up, Scottie,' first?",
+      "bonusAward": 0
+    },
+    {
+      "id": "STOP_RIGHT_THERE",
+      "name": "Stop Right There",
+      "description": "You triggered a deadfall trap and a wall fell into place right in front of you. Then you walked into it. Does your nose hurt?",
+      "bonusAward": -10
+    },
+    {
+      "id": "THE_PITS",
+      "name": "The Pits",
+      "description": "You went for a swim in a tar pit... Now that's what I call a sticky situation! You're never going to be able to get this stuff out of your fur. ",
+      "bonusAward": -5
+    },
+    {
+      "id": "TOO_GOOD_TO_BE_TRUE",
+      "name": "Too Good To Be True",
+      "description": "Mmmm... Cheese. Delicious, tempting, wonderful cheese. You just couldn't help yourself, could you? Too bad it was attached to a mouse trap!",
+      "bonusAward": -30
     }
   ]
 }
