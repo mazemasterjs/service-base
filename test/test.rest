@@ -1,10 +1,7 @@
-@adminKey = a3JlZWJvZzoxc3VwZXIx 
-@assistantKey = RFJvZ2VyczpEUm9nZXJz
-@invalidKey = dGVzdDpndXk=
 @ocpKey = b3BlbnNoaWZ0Ok9wZW5TaGlmdF9QYXNzd29yZA==
 
-### Request Probes
-GET http://mazemasterjs.com/api/team/probes/live HTTP/1.1
+### get trophies
+GET http://mazemasterjs.com/api/trophy/get HTTP/1.1
 Authorization: Basic {{ocpKey}}
 Content-Type: application/json
 
@@ -14,12 +11,12 @@ Authorization: Basic {{ocpKey}}
 
 ### Request count of teams
 GET http://localhost:8083/api/team/count HTTP/1.1
-Authorization: Basic {{assistantKey}}
+Authorization: Basic {{ocpKey}}
 
 ### Request list of teams
 GET http://mazemasterjs.com/api/team/get
 Content-Type: application/json
-Authorization: Basic {{adminKey}}
+Authorization: Basic {{ocpKey}}
 
 ### Request a team
 GET http://mazemasterjs.com/api/team/get?id=d72889fc-2db0-4d82-a39f-b1422b2f75f4
@@ -27,12 +24,12 @@ Content-Type: application/json
 Authorization: Basic {{ocpKey}}
 
 ### Request specific user
-GET http://localhost:8083/api/team/get/user?userName=OpenShift HTTP/1.1
-Authorization: Basic {{adminKey}}
+GET http://mazemasterjs.com/api/team/get/user?userName=CKoehler HTTP/1.1
+Authorization: Basic {{ocpKey}}
 
 ### Update User
 PUT http://localhost:8083/api/team/update/user HTTP/1.1
-Authorization: Basic {{adminKey}}
+Authorization: Basic {{ocpKey}}
 Content-Type: application/json
 
  {
@@ -50,7 +47,7 @@ Content-Type: application/json
 
 ### Insert new user
 PUT http://localhost:8083/api/team/insert/user HTTP/1.1
-Authorization: Basic {{adminKey}}
+Authorization: Basic {{ocpKey}}
 Content-Type: application/json
 
 {
@@ -67,7 +64,7 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:8083/api/team/delete/user/f75740cf577ffff8f943b54bf0a7c850 HTTP/1.1
-Authorization: Basic {{adminKey}}
+Authorization: Basic {{ocpKey}}
 
 ### Get mazes
 GET http://mazemasterjs.com/api/maze/get?id=5:5:10:DEBUG_v1.0.0 HTTP/1.1
