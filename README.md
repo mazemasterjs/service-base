@@ -56,6 +56,10 @@ the designated \*-service.json file into memory and use it's settings to configu
 
 ## Change Log
 
+### v1.2.4
+
+- Shared library verison updated - includes numeric text type conversion attempt during json data validation
+
 ### v1.2.3
 
 - added some more trophies to the default trophy list

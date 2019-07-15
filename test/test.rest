@@ -1,7 +1,17 @@
 @ocpKey = b3BlbnNoaWZ0Ok9wZW5TaGlmdF9QYXNzd29yZA==
 
+### game probe
+GET http://mazemasterjs.com/game/probes/ready
+Authorization: Basic {{ocpKey}}
+Content-Type: application/json
+
 ### get trophies
 GET http://mazemasterjs.com/api/trophy/get HTTP/1.1
+Authorization: Basic {{ocpKey}}
+Content-Type: application/json
+
+### regen trophies
+GET http://mazemasterjs.com/api/trophy/regenerate-default-docs HTTP/1.1
 Authorization: Basic {{ocpKey}}
 Content-Type: application/json
 
