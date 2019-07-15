@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/mazemasterjs/service-base#readme",
   "dependencies": {
-    "@mazemasterjs/database-manager": "^1.6.1",
+    "@mazemasterjs/database-manager": "^1.6.2",
     "@mazemasterjs/logger": "^1.0.10",
     "@mazemasterjs/shared-library": "^1.13.5",
     "compression": "^1.7.4",
