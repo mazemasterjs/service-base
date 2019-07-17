@@ -10,8 +10,8 @@ GET http://mazemasterjs.com/api/trophy/get HTTP/1.1
 Authorization: Basic {{ocpKey}}
 Content-Type: application/json
 
-### regen trophies
-GET http://mazemasterjs.com/api/trophy/regenerate-default-docs HTTP/1.1
+### maze end points
+GET http://mazemasterjs.com/api/maze/get?id=5:5:1:BalBen_v1.0.0 HTTP/1.1
 Authorization: Basic {{ocpKey}}
 Content-Type: application/json
 
