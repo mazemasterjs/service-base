@@ -41,6 +41,25 @@ function getSvcColName(): string {
   }
 }
 
+export const topScores = (req: Request, res: Response) => {
+  const mazeId = req.query.mazeId;
+  const teamIds = req.query.teamIds;
+  let teamGames = req.query.teamGames;
+
+  if (teamGames === undefined) {
+    teamGames = false;
+  }
+
+  fns
+    .getTopScoresByMaze(mazeId, teamIds, teamGames, req)
+    .then(results => {
+      res.status(200).json(results);
+    })
+    .catch(error => {
+      res.status(500).json({ error: error.message });
+    });
+};
+
 export const generateDocs = (req: Request, res: Response) => {
   log.debug(__filename, req.path, 'Handling request -> ' + req.url);
   const minRole = USER_ROLES.INSTRUCTOR;

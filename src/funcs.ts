@@ -171,6 +171,67 @@ export async function getCount(colName: string, req?: Request): Promise<number> 
  * @param req - express request
  * @param res - express response
  */
+export async function getTopScoresByMaze(mazeId: string, teamIds: Array<string>, teamGames: boolean, req: Request): Promise<Array<any>> {
+  const colName = config.MONGO_COL_SCORES;
+  const method = `getTopScoresByMaze(${colName}, req)`;
+
+  logDebug(__filename, method, 'Getting requested documents from database.');
+
+  // set some vars for page handling
+  const pageSize = 3;
+  const pageNum = 1;
+  const projection = {};
+  const sort = { totalScore: -1, lastUpdated: -1 };
+  let query = {};
+
+  const gameMode = teamGames ? 2 : 1;
+
+  if (teamIds === undefined) {
+    query = { mazeId, gameMode };
+  } else {
+    query = { mazeId, teamId: { $in: teamIds }, gameMode };
+  }
+
+  try {
+    // run the query
+    logDebug(__filename, method, `QUERY :: Page ${1}, ${colName}, ${JSON.stringify(query)}`);
+
+    let dupes = true;
+    let docs = []; // await dbMan.getDocuments(colName, query, sort, projection, pageSize, pageNum);
+
+    while (dupes) {
+      docs = await dbMan.getDocuments(colName, query, sort, projection, pageSize, pageNum);
+      if (docs.length > 1) {
+        if (docs[0].botId === docs[1].botId && docs[0].totalScore === docs[1].totalScore) {
+          await dbMan.deleteDocument(config.MONGO_COL_SCORES, { id: docs[1].id });
+        } else if (docs.length > 2 && docs[1].botId === docs[2].botId && docs[1].totalScore === docs[2].totalScore) {
+          await dbMan.deleteDocument(config.MONGO_COL_SCORES, { id: docs[2].id });
+        } else {
+          dupes = false;
+        }
+      } else {
+        dupes = false;
+      }
+    }
+
+    // return the results
+    logDebug(__filename, method, `Returning ${docs.length} documents from the '${colName}' collection.`);
+    return Promise.resolve(docs);
+  } catch (err) {
+    // log the error and return message
+    log.error(__filename, method, `Error while collecting documents ->`, err);
+    return Promise.reject(err);
+  }
+}
+
+/**
+ * Returns all documents from the given collection that match the query parameters. If no
+ * query parameters are given, all documents will be returned (be careful!)
+ *
+ * @param colName - collection to query
+ * @param req - express request
+ * @param res - express response
+ */
 export async function getDocs(colName: string, req: Request): Promise<Array<any>> {
   const method = `getDocs(${colName}, req)`;
   logDebug(__filename, method, 'Getting requested documents from database.');
