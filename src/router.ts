@@ -27,6 +27,11 @@ if (config.Service.Name === 'trophy') {
   router.get('/regenerate-default-docs', routes.generateDocs);
 }
 
+// score-specific routes
+if (config.Service.Name === 'score') {
+  router.get('/get/topScores', (req, res) => routes.topScores(req, res));
+}
+
 // team/bot-specific routes
 if (config.Service.Name === 'team') {
   router.get('/count/botCode', (req, res) => routes.countDocs(req, res, config.MONGO_COL_BOTCODE));

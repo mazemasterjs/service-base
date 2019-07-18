@@ -32,6 +32,10 @@ if (config.Service.Name === 'maze') {
 if (config.Service.Name === 'trophy') {
     exports.router.get('/regenerate-default-docs', routes.generateDocs);
 }
+// score-specific routes
+if (config.Service.Name === 'score') {
+    exports.router.get('/get/topScores', (req, res) => routes.topScores(req, res));
+}
 // team/bot-specific routes
 if (config.Service.Name === 'team') {
     exports.router.get('/count/botCode', (req, res) => routes.countDocs(req, res, config.MONGO_COL_BOTCODE));

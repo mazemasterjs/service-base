@@ -49,6 +49,22 @@ function getSvcColName() {
         }
     }
 }
+exports.topScores = (req, res) => {
+    const mazeId = req.query.mazeId;
+    const teamIds = req.query.teamIds;
+    let teamGames = req.query.teamGames;
+    if (teamGames === undefined) {
+        teamGames = false;
+    }
+    fns
+        .getTopScoresByMaze(mazeId, teamIds, teamGames, req)
+        .then(results => {
+        res.status(200).json(results);
+    })
+        .catch(error => {
+        res.status(500).json({ error: error.message });
+    });
+};
 exports.generateDocs = (req, res) => {
     log.debug(__filename, req.path, 'Handling request -> ' + req.url);
     const minRole = Enums_1.USER_ROLES.INSTRUCTOR;
