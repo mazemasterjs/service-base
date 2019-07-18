@@ -122,6 +122,7 @@ function authUser(userName, password, callback) {
         if (userCreds !== null) {
             if (userCreds.pwHash !== object_hash_1.MD5(password)) {
                 log.debug(__filename, method, 'Authentication Failed: Invalid password: ' + userCreds.userName);
+                security.evictCredentials(userCreds);
                 callback(null, false);
                 return;
             }
