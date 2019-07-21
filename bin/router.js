@@ -40,6 +40,7 @@ if (config.Service.Name === 'score') {
 if (config.Service.Name === 'team') {
     exports.router.get('/count/botCode', (req, res) => routes.countDocs(req, res, config.MONGO_COL_BOTCODE));
     exports.router.get('/get/botCode', (req, res) => routes.getDocs(req, res, config.MONGO_COL_BOTCODE));
+    exports.router.get('/get/botCode/:versionsOnly', (req, res) => routes.getDocs(req, res, config.MONGO_COL_BOTCODE));
     exports.router.put('/insert/botCode', (req, res) => routes.insertDoc(req, res, config.MONGO_COL_BOTCODE));
     exports.router.put('/update/botCode', (req, res) => routes.updateDoc(req, res, config.MONGO_COL_BOTCODE));
     exports.router.delete('/delete/botCode/:botId/:version', (req, res) => routes.deleteDoc(req, res, config.MONGO_COL_BOTCODE));

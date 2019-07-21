@@ -257,7 +257,11 @@ function getDocs(colName, req) {
         const sort = getSortByColName(colName);
         const query = buildQueryJson(req.query);
         // set the appropriate projections
-        const projection = getProjection(colName, query);
+        let projection = getProjection(colName, query);
+        // override botCode projection if getting versions only
+        if (colName === config.MONGO_COL_BOTCODE && req.params.versionsOnly === 'true') {
+            projection = { _id: 0, version: 1 };
+        }
         const stubbed = Object.entries(projection).length > 1;
         try {
             // loop through the paged list of docs and build a return array.

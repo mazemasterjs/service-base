@@ -36,6 +36,7 @@ if (config.Service.Name === 'score') {
 if (config.Service.Name === 'team') {
   router.get('/count/botCode', (req, res) => routes.countDocs(req, res, config.MONGO_COL_BOTCODE));
   router.get('/get/botCode', (req, res) => routes.getDocs(req, res, config.MONGO_COL_BOTCODE));
+  router.get('/get/botCode/:versionsOnly', (req, res) => routes.getDocs(req, res, config.MONGO_COL_BOTCODE));
   router.put('/insert/botCode', (req, res) => routes.insertDoc(req, res, config.MONGO_COL_BOTCODE));
   router.put('/update/botCode', (req, res) => routes.updateDoc(req, res, config.MONGO_COL_BOTCODE));
   router.delete('/delete/botCode/:botId/:version', (req, res) => routes.deleteDoc(req, res, config.MONGO_COL_BOTCODE));

@@ -56,6 +56,11 @@ the designated \*-service.json file into memory and use it's settings to configu
 
 ## Change Log
 
+### v1.2.5
+
+- Added team/get/botCode/:versionsOnly route that returns only the version numbers for a bot's code entries instead of the whole botCode document - this speeds up
+  bot loading and version switching tremendously.
+
 ### v1.2.4
 
 - Shared library verison updated - includes numeric text type conversion attempt during json data validation
