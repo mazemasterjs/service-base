@@ -1,7 +1,6 @@
 # service-base
 
-RESTful Service APIs for Maze, Team, Score, and Trophy data. When started, this project will use the SERVICE_DOC_FILE environment variable to load
-the designated \*-service.json file into memory and use it's settings to configure it target collections and endpoints.
+RESTful Service APIs for Maze, Team, Score, and Trophy data. When started, this project will use the SERVICE_DOC_FILE environment variable to load the designated \*-service.json file into memory and use it's settings to configure it target collections and endpoints.
 
 ## Details
 
@@ -127,6 +126,4 @@ the designated \*-service.json file into memory and use it's settings to configu
 
 - First full release - all services are now running on service-base
 
-## TODO
 
-- Need to add stub feature for scores and trophies
